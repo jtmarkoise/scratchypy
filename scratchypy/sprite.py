@@ -51,10 +51,10 @@ class Sprite(pygame.sprite.Sprite):
         self._debug = False
         self._loadCostumes(costumes if isinstance(costumes, list) else [ costumes ])
         # Events
-        self._onClick = EventCallback(self)
+        self._onClick = EventCallback(self, None)
         self._messageHandlers = {}
-        self._keyHandlers = {} # Dict of key->handler
-        self._on_tick = EventCallback(self)
+        self._keyHandlers = {} # Dict of key->EventCallback
+        self._on_tick = EventCallback(self, None)
         
         # TODO: have a mode to keep on screen
         
@@ -75,7 +75,7 @@ class Sprite(pygame.sprite.Sprite):
         # These variables needed for sprite conventions
         self.image = orig = self._costumes[self._costumeIndex]
         self.mask = self.masks[self._costumeIndex]
-        if self._rotationStyle == LEFT_RIGHT and self.rotation > 180:
+        if self._rotationStyle == LEFT_RIGHT and self.rotation >= 180:
             self.image = pygame.transform.flip(self.image, True, False)
         elif self._rotationStyle == ALL_AROUND and self.rotation:
             #self.image = pygame.transform.rotozoom(self.image, -self.rotation, self._scale) # pygame is CCW
@@ -403,13 +403,13 @@ class Sprite(pygame.sprite.Sprite):
             intkey = key
         else:
             raise TypeError("unknown key")
-        self._keyHandlers[intkey] = functionToCall
+        name = pygame.key.name(intkey) + " key handler: " + functionToCall.__name__
+        self._keyHandlers[intkey] = EventCallback(self, functionToCall, name=name)
         
     def _on_key_down(self, event):
         handler = self._keyHandlers.get(event.key)
         if handler:
-            name = pygame.key.name(event.key) + " key handler: " + handler.__name__
-            EventCallback(self, handler, name).call(self)
+            handler(self)
     
     def when_clicked(self, handler):
         """
@@ -517,7 +517,11 @@ class Sprite(pygame.sprite.Sprite):
         """
         @return answer as a string
         """
-        pass
+        print("ask and wait")
+        self.say(whatisyourname)
+        answer = await scratchypy.get_stage()._ask_prompt()
+        self.say(None)
+        return answer
     
     # key_pressed on window
     # mouse_down, x, y on window
