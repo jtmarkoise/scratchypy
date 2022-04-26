@@ -44,3 +44,7 @@ See the Python design page for expert information TBD
 In short, there is none.
 
 If you find an issue with the library itself, please open an issue on GitHub.
+
+## TODO
+- other libs like pygame-menu and UI
+- how to make images / transparency

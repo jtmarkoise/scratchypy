@@ -73,6 +73,9 @@ def random_position():
 def window_size():
     return _windowSize
 
+def window_rect():
+    return pygame.Rect(0,0, *_windowSize)
+
 async def wait(seconds):
     await asyncio.sleep(seconds)
 
@@ -171,5 +174,13 @@ def start_async(windowSize=(640,480), backgroundColor=color.WHITE):
     #asyncio.create_task(async_tick(screen, backgroundColor))
     loop.call_soon(async_tick, screen, backgroundColor)
     loop.run_forever()
-    
+    # drain cancellations
+    #print("Cancelling tasks")
+    for task in asyncio.Task.all_tasks():
+        task.cancel()
+    try:
+        loop.run_until_complete(asyncio.gather(*asyncio.Task.all_tasks()))
+    except:
+        pass #TODO: other try/except may spew on exit
+    loop.close()
     

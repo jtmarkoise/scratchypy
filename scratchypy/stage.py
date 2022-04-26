@@ -7,6 +7,8 @@ import inspect
 from typing import Union
 import pygame
 from scratchypy.eventcallback import EventCallback
+import scratchypy
+from text import AskDialog
 
 #TODO prefer composition
 class Stage(pygame.sprite.Group):
@@ -19,14 +21,15 @@ class Stage(pygame.sprite.Group):
         Constructor
         '''
         pygame.sprite.Group.__init__(self)
-        self._on_start = EventCallback(self)
-        self._on_tick = EventCallback(self)
+        self._on_start = EventCallback(self, None)
+        self._on_tick = EventCallback(self, None)
         self._backdrops = []
         self._name_lookup = {}
-        self._onClick = EventCallback(self)
+        self._onClick = EventCallback(self, None)
         self._allClickEvents = False
         # Dict of key->handler
         self._keyHandlers = {}
+        self._dialog = None
         
     def _start(self):
         self._on_start(self)
@@ -37,6 +40,8 @@ class Stage(pygame.sprite.Group):
         pygame.sprite.Group.update(self)
         for sprite in self.sprites():
             sprite._render(screen)
+        if self._dialog:
+            self._dialog._render(screen)
             
     def _on_mouse_down(self, event):
         #TODO: distinguish click vs. drag
@@ -67,9 +72,13 @@ class Stage(pygame.sprite.Group):
             self._onClick(event.pos)
             
     def _on_key_down(self, event):
+        if self._dialog:
+            self._dialog._on_key_down(event)
+            return # make it modal
+        
         handler = self._keyHandlers.get(event.key)
         if handler:
-            handler()
+            handler(self)
         # Pass to sprites too
         for sp in self.sprites():
             sp._on_key_down(event)
@@ -109,7 +118,7 @@ class Stage(pygame.sprite.Group):
             intkey = key
         else:
             raise TypeError("unknown key")
-        self._keyHandlers[intkey] = functionToCall
+        self._keyHandlers[intkey] = EventCallback(self, functionToCall)
         
     def forever(self, functionToCall):
         #self._on_tick = functionToCall
@@ -136,6 +145,19 @@ class Stage(pygame.sprite.Group):
     ##                  SENSING
     #################################################
     # TODO keypress - should go to sprites too??
+    
+    async def _ask_prompt(self):
+        """
+        Draws the text box on the string and asynchronously waits until 
+        the user has entered the value.
+        @return answer as a string
+        """
+        self._dialog = AskDialog(scratchypy.window_rect())
+        try:
+            answer = await self._dialog.done()
+        finally:
+            self._dialog = None
+        return answer
     
     #################################################
     ##                  VARIABLES

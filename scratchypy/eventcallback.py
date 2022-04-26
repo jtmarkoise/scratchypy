@@ -18,7 +18,7 @@ class EventCallback:
     Catch exceptions TODO
     '''
 
-    def __init__(self, sender, cb=None, name=''):
+    def __init__(self, sender, cb, name=''):
         '''
         '''
         self._sender = sender #FIXME: here or below?
@@ -26,14 +26,20 @@ class EventCallback:
         self._task = None
         self._name = name if name else cb.__name__ if cb else '(none)'
         
+    def name(self):
+        return self._name
+        
     def set(self, cb):
         self._cb = cb
         if self._task:
             self.task.cancel()
     
     def _on_task_done(self, task):
-        ex = task.exception()
-        if ex:
+        if task.cancelled():
+            return
+        try:
+            task.exception()
+        except Exception as ex:
             print("Callback error: %s: %s" % (self._name, ex))
             task.print_stack()
         self._task = None  # ready for next one

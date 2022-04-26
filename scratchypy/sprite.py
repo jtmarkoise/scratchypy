@@ -517,7 +517,6 @@ class Sprite(pygame.sprite.Sprite):
         """
         @return answer as a string
         """
-        print("ask and wait")
         self.say(whatisyourname)
         answer = await scratchypy.get_stage()._ask_prompt()
         self.say(None)

@@ -46,8 +46,11 @@ def tick(stage):
     if key_pressed("down"):
         sp1.change_y_by(30)
         
-def stageKey():
-    sp1.change_x_by(30)
+async def stageKey(stage):
+    #sp1.change_x_by(30)
+    print("stageKey")
+    answer = await sp1.ask_and_wait("what you want?")
+    print(answer)
 
 async def spriteKey(src):
     #sp1.change_x_by(-30)
