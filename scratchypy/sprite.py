@@ -248,8 +248,15 @@ class Sprite(pygame.sprite.Sprite):
         return (self.x, self.y)
     
     def direction(self) -> float:
+        """
+        The "direction" in Scratch is the angle the character is facing.
+        By default, the cat faces right, 90 degrees - that is equivalent
+        to not being rotated (0 degrees).
+        Direction in Scratch is also in the range [-180,180], instead of
+        [0,360)
+        """
         # FIXME: Scratch direction is different than rotation
-        return (self.rotation + 90) % 360
+        return ((self.rotation + 270) % 360) -180
             
     #################################################
     ##                  LOOKS
@@ -512,6 +519,33 @@ class Sprite(pygame.sprite.Sprite):
             return dist(self.position(), what)
         else:
             raise ValueError("Unknown type given to distance_to()")
+        
+    def direction_to(self, what):
+        """
+        Bonus: gives the direction in degrees from this Sprite to the
+        given thing.
+        @param what Can be any of
+            * Sprite another sprite - distance center to center
+            * An (x,y) position tuple
+        @return a direction in the range [-180,180), where 0 means the
+                other object is directly above this one.
+        """
+        if isinstance(what, Sprite):
+            posX = what.x
+            posY = what.y
+        else:
+            posX = what[0]
+            posY = what[1]
+
+        dy = posY - self.y # may be negatives
+        dx = posX - self.x
+        if dx == 0:  # straight up or down
+            return 0 if dy >= 0 else 180
+        
+        rotation = math.atan(dy/dx) * 180 / math.pi
+        if dx < 0:
+            rotation += 180
+        return (rotation + 270) % 360 - 180
         
     async def ask_and_wait(self, whatisyourname):
         """

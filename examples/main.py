@@ -66,9 +66,10 @@ def onClick(relpos):
     
 def stageClick(pos):
     print("Miss")
+    print(sp1.direction_to((200,200)))
     
 def drawExtra(stage, surface):
-    pygame.draw.rect(surface, color.BLUE, pygame.Rect(1,1,9,9), width=1)
+    pygame.draw.rect(surface, color.BLUE, pygame.Rect(200,200,2,2), width=1)
     
 
 def onHello(**kwargs):
