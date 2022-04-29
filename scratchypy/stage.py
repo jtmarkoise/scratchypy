@@ -30,6 +30,7 @@ class Stage(pygame.sprite.Group):
         # Dict of key->handler
         self._keyHandlers = {}
         self._dialog = None
+        self._draw_raw = EventCallback(self, None)
         
     def _start(self):
         self._on_start(self)
@@ -40,6 +41,7 @@ class Stage(pygame.sprite.Group):
         pygame.sprite.Group.update(self)
         for sprite in self.sprites():
             sprite._render(screen)
+        self._draw_raw(self, screen)
         if self._dialog:
             self._dialog._render(screen)
             
@@ -164,4 +166,17 @@ class Stage(pygame.sprite.Group):
     #################################################
     # TODO: show variable?  or leave it to a debugger?
             
-        
+    #################################################
+    ##                  BONUS
+    #################################################
+    def when_drawing(self, callback):
+        """
+        Register an event handler to be called when the screen
+        and all sprites are done drawing.  This gives a chance
+        to manually draw more stuff with raw pygame commands
+        on the raw pygame Surface.
+        The callback should look like this:
+        def drawExtraStuff(stage, surface):
+            pygame.draw.rect(...)  # e.g.
+        """
+        self._draw_raw.set(callback)

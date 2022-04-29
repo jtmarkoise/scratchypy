@@ -29,6 +29,7 @@ There are several areas where ScratchyPy adds on some bonus functionality on top
 - AnimatedSprite
 - Multiple stages and substages
 - Direct messages with parameters
+- stage.when_drawing to hook in pygame drawing
 
 ## Sharing
 What makes Scrach fun is its social coding aspect.  You can easily try out others' work and it is safe to do so in the confines of a browser.
@@ -46,5 +47,35 @@ In short, there is none.
 If you find an issue with the library itself, please open an issue on GitHub.
 
 ## TODO
+- colors
+
+## How to make images / transparency
+
+Sprite with single costume:
+
+```
+sp = Sprite("larry.png")
+```
+
+Sprite with multiple costumes:
+
+```
+sp = Sprite(["explosion1.png", "explosion2.png"])
+```
+
+Loading sprites with setting transparent color:
+
+```
+costume = image.load("curly.bmp", color.WHITE)
+sp = Sprite(costume)
+```
+
+Convenient way to load separate images in an animation: image01.png, image02.png, etc.  Make the black background transparent.
+
+```
+frames = image.loadPattern("animation/image*.png", Color.BLACK)
+sp = Sprite(frames)
+```
+
+## Graduating from ScratchyPy
 - other libs like pygame-menu and UI
-- how to make images / transparency

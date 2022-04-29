@@ -66,6 +66,10 @@ def onClick(relpos):
     
 def stageClick(pos):
     print("Miss")
+    
+def drawExtra(stage, surface):
+    pygame.draw.rect(surface, color.BLUE, pygame.Rect(1,1,9,9), width=1)
+    
 
 def onHello(**kwargs):
     print(kwargs["who"])
@@ -75,6 +79,7 @@ if __name__ == '__main__':
     stage.forever(tick)
     stage.when_clicked(stageClick)
     stage.when_key_pressed('a', stageKey)
+    stage.when_drawing(drawExtra)
     #start()
     start_async()
     
