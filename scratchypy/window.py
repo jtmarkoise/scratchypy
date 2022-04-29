@@ -176,10 +176,10 @@ def start_async(windowSize=(640,480), backgroundColor=color.WHITE):
     loop.run_forever()
     # drain cancellations
     #print("Cancelling tasks")
-    for task in asyncio.Task.all_tasks():
+    for task in asyncio.all_tasks():
         task.cancel()
     try:
-        loop.run_until_complete(asyncio.gather(*asyncio.Task.all_tasks()))
+        loop.run_until_complete(asyncio.gather(*asyncio.all_tasks()))
     except:
         pass #TODO: other try/except may spew on exit
     loop.close()

@@ -7,8 +7,7 @@ import inspect
 from typing import Union
 import pygame
 from scratchypy.eventcallback import EventCallback
-import scratchypy
-from text import AskDialog
+from scratchypy.text import AskDialog
 
 #TODO prefer composition
 class Stage(pygame.sprite.Group):

@@ -32,7 +32,7 @@ class EventCallback:
     def set(self, cb):
         self._cb = cb
         if self._task:
-            self.task.cancel()
+            self._task.cancel()
     
     def _on_task_done(self, task):
         if task.cancelled():
