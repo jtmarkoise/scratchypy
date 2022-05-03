@@ -32,7 +32,8 @@ def tick(stage):
     #if random.randint(1,10) > 6:
     #    sp1.turn(random.randint(-40,40))
     #sp1.setRotationStyle(scratchypy.LEFT_RIGHT)
-    sp1.point_towards((mouse_x(), mouse_y()))
+    w = get_window()
+    sp1.point_towards((w.mouse_x, w.mouse_y))
     #sp1.change_size_by(random.randint(-5, 5))
     sp1.move(3)
     #sp1.if_on_edge_bounce()
@@ -41,10 +42,12 @@ def tick(stage):
     txt.turn(2)
     #stage.broadcast("hello", who="worldx")
     #print(pygame.key.name(pygame.K_UP))
-    if key_pressed("up"):
+    if w.key_pressed("up"):
         sp1.change_y_by(-30)
-    if key_pressed("down"):
+    if w.key_pressed("down"):
         sp1.change_y_by(30)
+    if w.key_pressed("c"):
+        print(sp1.y_position)
         
 async def stageKey(stage):
     #sp1.change_x_by(30)
@@ -76,13 +79,14 @@ def onHello(**kwargs):
     print(kwargs["who"])
 
 if __name__ == '__main__':
+    stage = get_stage()
     stage.when_started(init)
     stage.forever(tick)
     stage.when_clicked(stageClick)
     stage.when_key_pressed('a', stageKey)
     stage.when_drawing(drawExtra)
     #start()
-    start_async()
+    start()
     
     
     

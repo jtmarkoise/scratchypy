@@ -4,15 +4,12 @@ import math
 import asyncio
 import inspect
 from typing import Literal, Tuple, Union
-import scratchypy
-from scratchypy.window import window_size
+from scratchypy.window import get_window
 from scratchypy import color
 from scratchypy.eventcallback import EventCallback
+from scratchypy.decorator import *
+import scratchypy.text
 
-_BLUE = pygame.Color(0,0,255)
-_WHITE = pygame.Color(255,255,255)
-_GREEN = pygame.Color(0,255,255)
-FPS=30
 
 # Rotation styles
 DONT_ROTATE = 0
@@ -29,27 +26,35 @@ class Sprite(pygame.sprite.Sprite):
         Like Scratch, x,y is in the center of the sprite.
         Where that is may change based on the costume.
         """
+        #TODO: separate from pygame groups
         self.groups = [ stage ] if stage else []
         pygame.sprite.Sprite.__init__(self, self.groups)
+        
         global _idCounter
         _idCounter += 1
-        self.name = name if name else "sprite" + str(_idCounter)
-        self._costumes = []
-        self._costumeIndex = 0
-        self.masks = []
-        self.visible = True
-        self.x = x
-        self.y = y
+        self._name = name if name else "sprite" + str(_idCounter)
+        
+        self._costumes = []  #TODO ordered dictionary so we can lookup by name too
+        self._costumeIndex = 0 #TODO does not exist yet
+        self._image = None # set in _applyImage
+        self._mask = None  #ditto
+        self._rect = None # ditto
+        self._visible = True
+        self._x = x
+        self._y = y
+        
         self._scale = 1 # 0..1..n, but API uses 0..100%..n%
         if size is not None and size >= 0: #TODO confusing name, but matches scratch
             self._scale = size/100
-        self.rotation = 0  # degrees clockwise, like Scratch
+        self._rotation = 0  # degrees clockwise, like Scratch
         self._rotationStyle = ALL_AROUND # matches Scratch modes, may flip
+        
+        #TODO
         self._draggable = False
         self._animation = None
         self._sayThinkImages = None # images (right,left) when saying or thinking
         self._debug = False
-        self._loadCostumes(costumes if isinstance(costumes, list) else [ costumes ])
+    
         # Events
         self._onClick = EventCallback(self, None)
         self._messageHandlers = {}
@@ -57,6 +62,8 @@ class Sprite(pygame.sprite.Sprite):
         self._on_tick = EventCallback(self, None)
         
         # TODO: have a mode to keep on screen
+        self._loadCostumes(costumes if isinstance(costumes, list) else [ costumes ])
+        #TODO: assert at least one
         
     def _loadCostumes(self, listOfImages):
         for im in listOfImages:
@@ -66,36 +73,50 @@ class Sprite(pygame.sprite.Sprite):
             elif isinstance(im, pygame.Surface):
                 image = im
             self._costumes.append(image)
-            mask = pygame.mask.from_surface(image)
-            self.masks.append(mask)
         self.switch_costume_to(0)
         
     def _applyImage(self):
         """ Apply scales and transforms to original image, then set sprite vars """
         # These variables needed for sprite conventions
-        self.image = orig = self._costumes[self._costumeIndex]
-        self.mask = self.masks[self._costumeIndex]
-        if self._rotationStyle == LEFT_RIGHT and self.rotation >= 180:
-            self.image = pygame.transform.flip(self.image, True, False)
-        elif self._rotationStyle == ALL_AROUND and self.rotation:
-            #self.image = pygame.transform.rotozoom(self.image, -self.rotation, self._scale) # pygame is CCW
-            self.image = pygame.transform.rotate(self.image, -self.rotation) # pygame is CCW
+        self._image = orig = self._costumes[self._costumeIndex]
+        if self._rotationStyle == LEFT_RIGHT and self._rotation >= 180:
+            self._image = pygame.transform.flip(self._image, True, False)
+        elif self._rotationStyle == ALL_AROUND and self._rotation:
+            #self._image = pygame.transform.rotozoom(self._image, -self._rotation, self._scale) # pygame is CCW
+            self._image = pygame.transform.rotate(self._image, -self._rotation) # pygame is CCW
         # else no rotation or flip
         
         if self._scale:
-            r = self.image.get_rect()
+            r = self._image.get_rect()
             newSize = (int(r.width * self._scale), int(r.height * self._scale))
-            self.image = pygame.transform.smoothscale(self.image, newSize)
+            self._image = pygame.transform.smoothscale(self._image, newSize)
 
-        self.image.set_colorkey(orig.get_colorkey()) 
-        self.mask = pygame.mask.from_surface(self.image)
-        self.rect = self.image.get_rect(center=(self.x, self.y))
+        self._image.set_colorkey(orig.get_colorkey()) 
+        self._mask = pygame.mask.from_surface(self._image)
+        self._rect = self._image.get_rect(center=(self._x, self._y))
         
     def _on_mouse_motion(self, event):
         if self._draggable:
             pass #TODO
-        
-        
+    
+    @property
+    def name(self):
+        """
+        @return the name of the sprite set in the constructor
+        """
+        return self._name
+    
+    @property
+    def visible(self):
+        """
+        @return True if visible, or False if hide() has been called.
+        """
+        return self._visible
+    
+    @property
+    def rect(self):
+        return self._rect
+    
     #################################################
     ##                  MOTION
     #################################################
@@ -107,11 +128,11 @@ class Sprite(pygame.sprite.Sprite):
         @param steps Distance to travel.  May be a fraction.
         FIXME for left-right mode
         """
-        dy = steps * math.sin(self.rotation * math.pi / 180)
-        dx = steps * math.cos(self.rotation * math.pi / 180)
-        self.y += dy
-        self.x += dx
-        self.rect = self.image.get_rect(center=(self.x, self.y))
+        dy = steps * math.sin(self._rotation * math.pi / 180)
+        dx = steps * math.cos(self._rotation * math.pi / 180)
+        self._y += dy
+        self._x += dx
+        self._rect = self._image.get_rect(center=(self._x, self._y))
         
     def turn(self, degrees:float):
         """
@@ -119,8 +140,8 @@ class Sprite(pygame.sprite.Sprite):
         A positive number is clockwise 🔃.
         A negative number is counter-clockwise 🔄.
         """
-        self.rotation += degrees
-        self.rotation %= 360
+        self._rotation += degrees
+        self._rotation %= 360
         self._applyImage()
         
     def go_to_position(self, position:Tuple[float,float]):
@@ -132,17 +153,18 @@ class Sprite(pygame.sprite.Sprite):
         self.goTo(position[0], position[1])
         
     def go_to(self, x:float, y:float):
-        self.x = x
-        self.y = y
-        self.rect = self.image.get_rect(center=(self.x, self.y))
+        self._x = x
+        self._y = y
+        self._rect = self._image.get_rect(center=(self._x, self._y))
         
     def glide_to_position(self, position:Tuple[float,float], seconds:float):
         self.glideTo(position[0], position[1], seconds)
         
     def glide_to(self, x:float, y:float, seconds:float):
-        # check seconds > 0
-        dx = (x - self.x) / (FPS * seconds)
-        dy = (y - self.y) / (FPS * seconds)
+        # FIXME: change to async
+        FPS = get_window().fps
+        dx = (x - self._x) / (FPS * seconds)
+        dy = (y - self._y) / (FPS * seconds)
         class GlideAnimation:
             def __init__(self, sprite, dx, dy, nframes):
                 self.sprite = sprite
@@ -166,7 +188,7 @@ class Sprite(pygame.sprite.Sprite):
         Set the *direction* to the given C{degrees}.  The sprite will
         point that direction regardless of its current direction.
         """
-        self.rotation = (degrees - 90) % 360
+        self._rotation = (degrees - 90) % 360
         self._applyImage()
         
     def point_towards(self, positionXY):
@@ -179,54 +201,52 @@ class Sprite(pygame.sprite.Sprite):
 
         # The rotation(direction) is calculated no matter the mode.
         # Instead, _applyImage() decides whether to draw the rotation.
-        dy = posY - self.y # may be negatives
-        dx = posX - self.x
+        dy = posY - self._y # may be negatives
+        dx = posX - self._x
         if dx == 0:  # straight up or down
-            self.rotation = 0 if dy >= 0 else 180
+            self._rotation = 0 if dy >= 0 else 180
         else:
-            self.rotation = math.atan(dy/dx) * 180 / math.pi
+            self._rotation = math.atan(dy/dx) * 180 / math.pi
             if dx < 0:
-                self.rotation += 180
+                self._rotation += 180
         self._applyImage()
             
     def change_x_by(self, steps):
-        self.x += steps
-        self.rect = self.image.get_rect(center=(self.x, self.y))
+        self._x += steps
+        self._rect = self._image.get_rect(center=(self._x, self._y))
         
     def set_x_to(self, x):
-        self.x = x  # TODO: snap to screen?
-        self.rect = self.image.get_rect(center=(self.x, self.y))
+        self._x = x  # TODO: snap to screen?
+        self._rect = self._image.get_rect(center=(self._x, self._y))
         
     def change_y_by(self, steps):
-        self.y += steps
-        self.rect = self.image.get_rect(center=(self.x, self.y))
+        self._y += steps
+        self._rect = self._image.get_rect(center=(self._x, self._y))
         
     def set_y_to(self, y):
-        self.y = y
-        self.rect = self.image.get_rect(center=(self.x, self.y))
+        self._y = y
+        self._rect = self._image.get_rect(center=(self._x, self._y))
         
     def if_on_edge_bounce(self):
         """
-        TODO: only does left-right
-        FIXME: doesn't bounce until center x,y at edge
+        TODO: add padding
         """
-        win = window_size()
-        if self.x < 0:
-            self.x = 0
+        winx,winy = get_window().window_size()
+        if self._rect.left < 0:
+            self._x = self._rect.w / 2
             self.point_in_direction(-self.direction())
-        if self.x >= win[0]:
-            self.x = win[0]
+        if self._rect.right >= winx:
+            self._x = winx - self.rect.w / 2
             self.point_in_direction(-self.direction())
-        if self.y < 0:
-            self.y = 0
+        if self._rect.top < 0:
+            self._y = self._rect.h / 2
             self.point_in_direction(180-self.direction())
-        if self.y >= win[1]:
-            self.y = win[1]
+        if self._rect.bottom >= winy:
+            self._y = winy - self._rect.h / 2
             self.point_in_direction(180-self.direction())
-
-        self.rect = self.image.get_rect(center=(self.x, self.y))
-        self._applyImage()
             
+    def if_on_edge_snap(self, padding=0):
+        pass #TODO
             
     def set_rotation_style(self, style:Literal[DONT_ROTATE, LEFT_RIGHT, ALL_AROUND]):
         """ Use one of the enumerated values. """
@@ -234,29 +254,41 @@ class Sprite(pygame.sprite.Sprite):
             raise ValueError("bad style type")
         self._rotationStyle = style
         if style in (DONT_ROTATE, ALL_AROUND):
-            self.rotation = 0
+            self._rotation = 0
         self._applyImage()
         
-    # TODO: make a property?
+    @property
     def x_position(self) -> float:
-        return self.x
+        """
+        sprite.x is an alias for this.
+        @return the x coordinate of the center of this sprite.
+        """
+        return self._x
+    x = x_position
     
+    @property
     def y_position(self) -> float:
-        return self.y
+        """
+        sprite.y is an alias for this.
+        @return the y coordinate of the center of this sprite.
+        """
+        return self._y
+    y = y_position
     
+    @property
     def position(self) -> Tuple[float,float]:
-        return (self.x, self.y)
+        return (self._x, self._y)
     
+    @property
     def direction(self) -> float:
         """
         The "direction" in Scratch is the angle the character is facing.
         By default, the cat faces right, 90 degrees - that is equivalent
         to not being rotated (0 degrees).
-        Direction in Scratch is also in the range [-180,180], instead of
-        [0,360)
+        Direction is in the range -179.99.. to +180 inclusive.
         """
-        # FIXME: Scratch direction is different than rotation
-        return ((self.rotation + 270) % 360) -180
+        d = (self._rotation + 270) % 360 - 180  
+        return d if d != -180 else 180   # prefer positive 180
             
     #################################################
     ##                  LOOKS
@@ -340,10 +372,10 @@ class Sprite(pygame.sprite.Sprite):
     
     def switch_costume_to(self, index:int):
         """
+        TODO: support switch by name (file name?)
         @param number The index (number) of the costume to select.
                       Remember, in Python, counting starts at 0, 1, 2, ...
         """
-        #TODO support file name??
         if not self._costumes:
             return #BOOM
         if index < 0 or index > len(self._costumes):
@@ -375,16 +407,24 @@ class Sprite(pygame.sprite.Sprite):
     #TODO: color effects
         
     def show(self):
-        self.visible = True
+        self._visible = True
         
     def hide(self):
-        self.visible = False
+        self._visible = False
         
     #TODO layers
     
+    @property
     def costume_number(self) -> int:
         return self._costumeIndex
     
+    @property
+    def costume_name(self) -> str:
+        return "TODO: implement me"
+    
+    # backdrop on stage
+    
+    @property
     def size(self) -> float:
         """
         @return the size (scaling percent) as a number, where 100% is full size.
@@ -447,7 +487,7 @@ class Sprite(pygame.sprite.Sprite):
             else:
                 handler()
         elif self._debug:
-            print("%s: no handler found for message %s" % (self.name, messageName))
+            print("%s: no handler found for message %s" % (self._name, messageName))
     
     def broadcast(self, messageName, **kwargs):
         pass  #TODO - in stage
@@ -480,7 +520,7 @@ class Sprite(pygame.sprite.Sprite):
             return len(pygame.sprite.spritecollideany(self, what, pygame.sprite.collide_mask)) > 0
         elif isinstance(what, tuple):  #coordinates
             try:
-                return 1 == self.mask.get_at(what[0]-self.rect.left, what[1]-self.rect.top)
+                return 1 == self._mask.get_at(what[0]-self._rect.left, what[1]-self._rect.top)
             except: # way out of bounds.. TODO optimize no exception?
                 return False
         elif isinstance(pygame.color.Color):
@@ -490,11 +530,11 @@ class Sprite(pygame.sprite.Sprite):
         
     def touching_edge(self):
         #TODO: the mask may not necessarily go to the bounding rectangle
-        w, h = window_size()
-        return self.rect.left < 0 \
-            or self.rect.top < 0 \
-            or self.rect.right >= w \
-            or self.rect.bottom >= h
+        w, h = get_window().window_size()
+        return self._rect.left < 0 \
+            or self._rect.top < 0 \
+            or self._rect.right >= w \
+            or self._rect.bottom >= h
     
     def touching_color(self, color):
         raise NotImplementedError()
@@ -537,8 +577,8 @@ class Sprite(pygame.sprite.Sprite):
             posX = what[0]
             posY = what[1]
 
-        dy = posY - self.y # may be negatives
-        dx = posX - self.x
+        dy = posY - self._y # may be negatives
+        dx = posX - self._x
         if dx == 0:  # straight up or down
             return 0 if dy >= 0 else 180
         
@@ -574,23 +614,23 @@ class Sprite(pygame.sprite.Sprite):
         self._debug = onoff
         
     def _render(self, screen):
-        if self.visible:
-            screen.blit(self.image, self.rect)
+        if self._visible:
+            screen.blit(self._image, self._rect)
             if self._sayThinkImages:
                 bubbleRect = self._sayThinkImages[0].get_rect() # assume same size
                 # Y no higher than top of screen
-                bubbleY = max(0, self.rect.top - bubbleRect.h)
+                bubbleY = max(0, self._rect.top - bubbleRect.h)
                 # Bubble on right side if fits, else left
-                if self.rect.right + bubbleRect.w <= screen.get_size()[0]:
-                    r = bubbleRect.move(self.rect.right, bubbleY)
+                if self._rect.right + bubbleRect.w <= screen.get_size()[0]:
+                    r = bubbleRect.move(self._rect.right, bubbleY)
                     screen.blit(self._sayThinkImages[0], r) #right
                 else:
-                    r = bubbleRect.move(self.rect.left - bubbleRect.w, bubbleY)
+                    r = bubbleRect.move(self._rect.left - bubbleRect.w, bubbleY)
                     screen.blit(self._sayThinkImages[1], r) #left
             if self._debug:
-                pygame.draw.rect(screen, _BLUE, self.rect, width=1)
-                pygame.draw.line(screen, _GREEN, (self.x-5, self.y), (self.x+5, self.y))
-                pygame.draw.line(screen, _GREEN, (self.x, self.y-5), (self.x, self.y+5))
+                pygame.draw.rect(screen, color.BLUE, self._rect, width=1)
+                pygame.draw.line(screen, color.GREEN, (self._x-5, self._y), (self._x+5, self._y))
+                pygame.draw.line(screen, color.GREEN, (self._x, self._y-5), (self._x, self._y+5))
     blit = _render #XXX
         
     def update(self):
@@ -648,6 +688,7 @@ class AnimatedSprite(Sprite):
                
         """
         super().__init__(costumes, x=x, y=y, name=name, size=size)
+        FPS = get_window().fps
         if fps <= 0 or fps > FPS:
             raise ValueError("fps must be 1..FPS")
         self._framesPerTick = FPS // fps

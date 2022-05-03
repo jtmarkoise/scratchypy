@@ -7,10 +7,11 @@ import inspect
 from typing import Union
 import pygame
 from scratchypy.eventcallback import EventCallback
-import scratchypy
+import scratchypy.window 
 from text import AskDialog
 
 #TODO prefer composition
+#FIXME: "The Group does not keep sprites in any order"; we want ordering for layers
 class Stage(pygame.sprite.Group):
     '''
     classdocs
@@ -24,6 +25,7 @@ class Stage(pygame.sprite.Group):
         self._on_start = EventCallback(self, None)
         self._on_tick = EventCallback(self, None)
         self._backdrops = []
+        self._backdropId = -1 #TODO: gotta be one default
         self._name_lookup = {}
         self._onClick = EventCallback(self, None)
         self._allClickEvents = False
@@ -38,8 +40,9 @@ class Stage(pygame.sprite.Group):
     def _update(self, screen):
         if self._on_tick:
             self._on_tick(self)
-        pygame.sprite.Group.update(self)
+        #pygame.sprite.Group.update(self)
         for sprite in self.sprites():
+            sprite.update()
             sprite._render(screen)
         self._draw_raw(self, screen)
         if self._dialog:
@@ -103,6 +106,20 @@ class Stage(pygame.sprite.Group):
         pygame.sprite.Group.add(self, *sprites)
         
     #################################################
+    ##                  LOOKS
+    #################################################
+    @property
+    def backdrop_name(self) -> str:
+        return "TODO"
+    
+    @property
+    def backdrop_number(self) -> int:
+        """
+        Note: starts at 0
+        """
+        return self._backdropId
+    
+    #################################################
     ##                  EVENTS
     #################################################
             
@@ -154,7 +171,7 @@ class Stage(pygame.sprite.Group):
         the user has entered the value.
         @return answer as a string
         """
-        self._dialog = AskDialog(scratchypy.window_rect())
+        self._dialog = AskDialog(scratchypy.window.get_window().rect)
         try:
             answer = await self._dialog.done()
         finally:
