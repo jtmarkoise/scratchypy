@@ -8,7 +8,7 @@ from typing import Union
 import pygame
 from scratchypy.eventcallback import EventCallback
 import scratchypy.window 
-from text import AskDialog
+from scratchypy.text import AskDialog
 
 #TODO prefer composition
 #FIXME: "The Group does not keep sprites in any order"; we want ordering for layers
