@@ -1,8 +1,6 @@
-'''
-Created on Apr 2, 2022
+# Copyright 2022 Mark Malek
+# See LICENSE file for full license terms. 
 
-@author: markoise
-'''
 import glob
 import pygame.image
 

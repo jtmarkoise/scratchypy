@@ -1,8 +1,6 @@
-'''
-Created on Mar 25, 2022
+# Copyright 2022 Mark Malek
+# See LICENSE file for full license terms. 
 
-@author: markoise
-'''
 import random
 import asyncio
 import pygame #todo try
@@ -158,8 +156,7 @@ class Window:
         thread.set_ui_thread()
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
-        
-        self._stage._start()
+        loop.call_soon(self._stage._start)
         loop.call_soon(self._async_tick, screen)
         loop.run_forever()
         # drain cancellations
@@ -191,4 +188,4 @@ def start(windowSize=None, fullScreen=False, backgroundColor=None):
         _window.set_fullscreen()
     if backgroundColor:
         _window.set_background_color(backgroundColor)
-    _window.run()  #forwever
+    _window.run()  #forever

@@ -1,8 +1,6 @@
-'''
-Created on Mar 26, 2022
+# Copyright 2022 Mark Malek
+# See LICENSE file for full license terms. 
 
-@author: markoise
-'''
 import random
 from scratchypy import *
 from pygame.locals import *
@@ -10,9 +8,9 @@ from pygame.locals import *
 sp1 = None
 txt = None
 
-@ui_safe
-def init(stage):
-    global sp1, txt
+async def init(stage):
+    global sp1, sp2, txt
+    print("init")
     frames = image.loadPattern("assets/axolotl*.png")
     # Make the tail wag both ways
     frames.extend(reversed(frames[:-1]))
@@ -20,15 +18,28 @@ def init(stage):
                          x=90,y=90,
                          size=50, 
                          name='ax1')
-    stage.add(sp1) # TODO: name here so tick can fetch?
+    stage.add(sp1) 
     sp1.when_clicked(onClick)
     sp1.when_i_receive("hello", onHello)
     sp1.when_key_pressed('b', spriteKey)
+    
     txt = scratchypy.sprite.TextSprite("Hello there to all the cool axolotls with sunglasses", x=320, y=220)
     stage.add(txt)
     
-@ui_safe
+    sp2 = AnimatedSprite(frames, 1, 
+                         x=30,y=550,
+                         size=20, 
+                         name='ax2')
+    stage.add(sp2)
+    #Story mode
+    sp2.glide_to(30, 450, 1) #background
+    await sp2.say_and_wait("swimmin along", 1)
+    await sp2.glide_to_position_and_wait((700, 550), 5)
+    print("init done")
+
 def tick(stage):
+    global sp1
+    #print("tick")
     #if random.randint(1,10) > 6:
     #    sp1.turn(random.randint(-40,40))
     #sp1.setRotationStyle(scratchypy.LEFT_RIGHT)

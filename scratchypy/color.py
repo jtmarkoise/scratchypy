@@ -1,9 +1,7 @@
-'''
-Common named colors
-Created on Apr 1, 2022
+# Copyright 2022 Mark Malek
+# See LICENSE file for full license terms. 
+""" Common named colors """
 
-@author: markoise
-'''
 import pygame
 BLACK = pygame.Color(0,0,0)
 WHITE = pygame.Color(0xff,0xff,0xff)

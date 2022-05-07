@@ -1,9 +1,8 @@
-'''
-Created on Mar 25, 2022
+# Copyright 2022 Mark Malek
+# See LICENSE file for full license terms. 
 
-@author: markoise
-'''
 import inspect
+import asyncio
 from typing import Union
 import pygame
 from scratchypy.eventcallback import EventCallback
@@ -38,9 +37,8 @@ class Stage(pygame.sprite.Group):
         self._on_start(self)
         
     def _update(self, screen):
-        if self._on_tick:
-            self._on_tick(self)
-        #pygame.sprite.Group.update(self)
+        self._on_tick(self)
+        #pygame.sprite.Group.update(self)  XXX
         for sprite in self.sprites():
             sprite.update()
             sprite._render(screen)

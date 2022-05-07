@@ -1,3 +1,6 @@
+# Copyright 2022 Mark Malek
+# See LICENSE file for full license terms. 
+
 import pygame.sprite
 import pygame.font
 import math
@@ -51,7 +54,6 @@ class Sprite(pygame.sprite.Sprite):
         
         #TODO
         self._draggable = False
-        self._animation = None
         self._sayThinkImages = None # images (right,left) when saying or thinking
         self._debug = False
     
@@ -157,31 +159,35 @@ class Sprite(pygame.sprite.Sprite):
         self._y = y
         self._rect = self._image.get_rect(center=(self._x, self._y))
         
-    def glide_to_position(self, position:Tuple[float,float], seconds:float):
-        self.glideTo(position[0], position[1], seconds)
+    async def glide_to_and_wait(self, x:float, y:float, seconds:float):
+        nframes = get_window().fps * seconds
+        while nframes > 0:
+            # Recalculate each time in case another event moved us
+            dx = (x - self._x) / nframes
+            dy = (y - self._y) / nframes
+            self.change_x_by(dx)
+            self.change_y_by(dy)
+            nframes -= 1
+            await asyncio.sleep(0) # yields until next frame
+        # When done, should be at final spot
+        self.go_to(x, y)
+        self._rect = self._image.get_rect(center=(self._x, self._y))
+        
         
     def glide_to(self, x:float, y:float, seconds:float):
-        # FIXME: change to async
-        FPS = get_window().fps
-        dx = (x - self._x) / (FPS * seconds)
-        dy = (y - self._y) / (FPS * seconds)
-        class GlideAnimation:
-            def __init__(self, sprite, dx, dy, nframes):
-                self.sprite = sprite
-                self.dx = dx
-                self.dy = dy
-                self.frames = nframes
-            def update(self):
-                if self.frames <= 0:
-                    return False
-                self.sprite.change_x_by(self.dx)
-                self.sprite.change_y_by(self.dy)
-                self.frames -= 1
-                return True
-        self._animation = GlideAnimation(self, dx, dy, FPS*seconds)
-        if not self._animation.update():
-            self._animation = None
-
+        """
+        Glide to the given x, y in the background without waiting.
+        @return The task object which can be waited on for completion.
+        """
+        return asyncio.create_task(self.glide_to_and_wait(x, y, seconds))
+    
+    async def glide_to_position_and_wait(self, position:Tuple[float,float], seconds:float):
+        "Similar to glide_to_and_wait but with single position argument"
+        await self.glide_to_and_wait(position[0], position[1], seconds)
+    
+    def glide_to_position(self, position:Tuple[float,float], seconds:float):
+        "Similar to glide_to but with single position argument"
+        return self.glide_to(position[0], position[1], seconds)
         
     def point_in_direction(self, degrees:float):
         """
@@ -605,11 +611,6 @@ class Sprite(pygame.sprite.Sprite):
     #################################################
     ##                  MISC extras
     #################################################
-    # TODO: animation: costume loop vs. motion - may be both
-    def stop_animation(self):
-        self._animation = None
-                
-          
     def set_debug(self, onoff=True):
         self._debug = onoff
         
@@ -637,13 +638,7 @@ class Sprite(pygame.sprite.Sprite):
         """
         Called once per frame to do updates.
         """
-        if self._on_tick:
-            self._on_tick.call(self)
-        
-        if self._animation:
-            if not self._animation.update():
-                self._animation = None
-    
+        self._on_tick(self)
     
     
 class TextSprite(Sprite):
