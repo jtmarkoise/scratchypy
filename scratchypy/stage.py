@@ -63,13 +63,12 @@ class Stage(pygame.sprite.Group):
         # Find the sprite(s) that has the position
         handled = False
         for sp in self.sprites():
-            spPos = (int(event.pos[0] - sp.rect.left), int(event.pos[1] - sp.rect.top))
+            spPos = (int(event.pos[0] - sp._rect.left), int(event.pos[1] - sp._rect.top))
             #TODO: check for mask hit or is rect enough?
-            if sp.rect.collidepoint(event.pos) and sp.mask.get_at(spPos) == 1:
+            if sp._rect.collidepoint(event.pos) and sp._mask.get_at(spPos) == 1:
                 handled=True
                 # Hit - call the sprite's handler
-                if sp._onClick:
-                    sp._onClick(spPos) # Todo: what params to pass?
+                sp._on_click(sp, spPos) # Todo: what params to pass?
         # send event to the stage if registered
         if self._onClick and (self._allClickEvents or not handled):
             self._onClick(event.pos)

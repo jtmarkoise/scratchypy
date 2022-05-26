@@ -3,7 +3,7 @@
 
 import asyncio
 import traceback
-from scratchypy.thread import is_ui_thread, get_thread_pool
+from scratchypy.util import is_ui_thread
 
 class EventCallback:
     '''
@@ -50,7 +50,8 @@ class EventCallback:
         ex = task.exception()
         if ex:
             print("Callback error: %s: %s" % (self._name, ex))
-            task.print_stack()
+            #task.print_stack() # might be a future, not a task
+            traceback.print_exception(ex)
         self._task = None  # ready for next one
         
     def __call__(self, sender, *args, **kwargs):
@@ -74,9 +75,10 @@ class EventCallback:
             self._task = asyncio.get_running_loop().run_in_executor(None, self._cb, *args) # no kwargs
             self._task.add_done_callback(self._on_task_done)
         elif is_ui_thread():
-            # Consistently call on next loop
+            # Consistently call within event loop;
             # prevents race condition if `when_started` is async
-            # and the tick would happen before initialization
+            # and the tick would happen before initialization.
+            # BUT, this makes the callback delayed slightly
             asyncio.get_running_loop().call_soon(
                 self._safe_call, *args  ##FIXME: no kwargs
             )

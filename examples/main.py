@@ -80,6 +80,7 @@ def onClick(relpos):
     
 def stageClick(pos):
     print("Miss")
+    print("FPS: %f" % get_window().actual_fps)
     print(sp1.direction_to((200,200)))
     
 def drawExtra(stage, surface):

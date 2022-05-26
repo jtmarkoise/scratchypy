@@ -10,7 +10,6 @@ from typing import Literal, Tuple, Union
 from scratchypy.window import get_window
 from scratchypy import color
 from scratchypy.eventcallback import EventCallback
-from scratchypy.decorator import *
 import scratchypy.text
 
 
@@ -58,7 +57,7 @@ class Sprite(pygame.sprite.Sprite):
         self._debug = False
     
         # Events
-        self._onClick = EventCallback(self, None)
+        self._on_click = EventCallback(self, None)
         self._messageHandlers = {}
         self._keyHandlers = {} # Dict of key->EventCallback
         self._on_tick = EventCallback(self, None)
@@ -168,7 +167,7 @@ class Sprite(pygame.sprite.Sprite):
             self.change_x_by(dx)
             self.change_y_by(dy)
             nframes -= 1
-            await asyncio.sleep(0) # yields until next frame
+            await get_window().next_frame()
         # When done, should be at final spot
         self.go_to(x, y)
         self._rect = self._image.get_rect(center=(self._x, self._y))
@@ -469,7 +468,7 @@ class Sprite(pygame.sprite.Sprite):
         when this sprite is clicked, call the given handler
         
         """
-        self._onClick.set(handler)
+        self._on_click.set(handler)
     when_this_sprite_clicked = when_clicked
     
     def when_i_receive(self, messageName:str, handlerFunction):

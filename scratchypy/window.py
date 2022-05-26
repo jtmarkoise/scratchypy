@@ -3,15 +3,39 @@
 
 import random
 import asyncio
+import time
 import pygame #todo try
 import pygame.key
 from pygame.locals import *
 
 import scratchypy.stage
-from scratchypy import color, thread
+from scratchypy import color, util
+
+class _RollingAverage:
+    """
+    Simple class to keep a circular buffer of the last N values and
+    calculate a rolling average on them.
+    The buffer starts out as zeros so that will skew the results at the 
+    beginning.
+    """
+    def __init__(self, numValues=10):
+        if numValues <= 0:
+            raise ValueError("must be positive")
+        self._values = [0 for _ in range(numValues)]
+        self._numValues = numValues
+        self._index = 0
+        
+    def append(self, value):
+        self._values[self._index] = value
+        self._index = (self._index + 1) % self._numValues
+        
+    def average(self):
+        return sum(self._values) / self._numValues
+    
 
 class Window:
     FPS=30
+    FRAME_SEC = 1 / FPS
     
     def __init__(self):
         self._stage = scratchypy.stage.Stage()
@@ -20,8 +44,9 @@ class Window:
         self._windowSize = (800,600)
         self._fullScreen = False
         self._backgroundColor = color.WHITE
-        self._clock = pygame.time.Clock()
         self._running = False
+        self._rollingFrameSec = _RollingAverage()
+        self._lastDraw = time.perf_counter() # high resolution timer
         
     def set_size(self, width, height):
         """
@@ -46,8 +71,21 @@ class Window:
     
     
     @property
-    def fps(self):
+    def fps(self) -> int:
+        """
+        The target Frames Per Second used for calculations.
+        """
         return self.FPS
+    
+    @property
+    def actual_fps(self) -> float:
+        """
+        @return the actual calculated FPS as a float.  This is usually slightly
+        less than the configured fps() due to overhead.  But if you see it drop,
+        you may be having a performance problem or taking too much time in the
+        event callbacks.
+        """
+        return 1 / self._rollingFrameSec.average()
 
     @property
     def mouse_x(self):
@@ -132,28 +170,35 @@ class Window:
                     self._stage._on_key_down(event)
 
     def _async_tick(self, screen):
+        # paint the screen
+        pygame.display.flip()
+        # stamp when the screen was last painted and add to rolling average
+        now = time.perf_counter()  # high resolution timer
+        elapsed = now - self._lastDraw
+        self._rollingFrameSec.append(elapsed)
+        self._lastDraw = now
+        fudge = max(0, elapsed - self.FRAME_SEC) # overhead time
+        # Reschedule a draw for later.
+        # This limits the framerate, like tick(FPS), but also gives async
+        # callbacks triggered by below events a chance to run within the same
+        # frame.
+        againHandle = asyncio.get_running_loop().call_later(self.FRAME_SEC - fudge, self._async_tick, screen)
         
         try:
-            #print("tick " + str(clock.get_fps()))
             self._handleEvents()
-                
             screen.fill(self._backgroundColor)
             self._stage._update(screen)
-            # paint the screen
-            pygame.display.flip()
         except StopIteration:
+            againHandle.cancel()
             asyncio.get_running_loop().stop()
             return
         except Exception as ex:
-            print("uiOneFrame caught exception: '%s'.  The show must go on." % str(ex))
-        self._clock.tick(self.FPS)
-        
-        # reschedule ourselves
-        asyncio.get_running_loop().call_soon(self._async_tick, screen)
+            print("Exception from events: '%s'." % str(ex))
+            #TODO: stop and show dialog?
         
     def run(self):
         screen = self._make_screen(self._windowSize)
-        thread.set_ui_thread()
+        util.set_ui_thread()
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
         loop.call_soon(self._stage._start)
@@ -168,6 +213,13 @@ class Window:
         except:
             pass #TODO: other try/except may spew on exit
         loop.close()
+        
+    async def next_frame(self):
+        """ 
+        Yields control until the next frame is drawn.  This is done by a 
+        calculated sleep so isn't 100% guaranteed. TODO
+        """
+        await asyncio.sleep(self.FRAME_SEC)
 
 ## Module functions
 _window = Window()
