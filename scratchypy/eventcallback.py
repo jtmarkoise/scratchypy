@@ -41,7 +41,7 @@ class EventCallback:
             self._cb(self._sender, *args)
         except Exception as ex:
             print("Callback error: %s: %s" % (self._name, ex))
-            traceback.print_exception(ex)
+            traceback.print_exception(ex, ex, ex.__traceback__)
     
     def _on_task_done(self, task):
         "When coroutine is done, handle exceptions and bookkeeping"
@@ -51,7 +51,7 @@ class EventCallback:
         if ex:
             print("Callback error: %s: %s" % (self._name, ex))
             #task.print_stack() # might be a future, not a task
-            traceback.print_exception(ex)
+            traceback.print_exception(ex, ex, ex.__traceback__)
         self._task = None  # ready for next one
         
     def __call__(self, sender, *args, **kwargs):

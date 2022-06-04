@@ -2,7 +2,7 @@
 # See LICENSE file for full license terms. 
 
 import inspect
-import asyncio
+import random
 from typing import Union
 import pygame
 from scratchypy.eventcallback import EventCallback
@@ -23,6 +23,7 @@ class Stage(pygame.sprite.Group):
         pygame.sprite.Group.__init__(self)
         self._on_start = EventCallback(self, None)
         self._on_tick = EventCallback(self, None)
+        # list of (name, surface) tuples
         self._backdrops = []
         self._backdropId = -1 #TODO: gotta be one default
         self._name_lookup = {}
@@ -37,6 +38,8 @@ class Stage(pygame.sprite.Group):
         self._on_start(self)
         
     def _update(self, screen):
+        if self._backdropId >= 0:
+            screen.blit(self._backdrops[self._backdropId][1], (0,0))
         self._on_tick(self)
         #pygame.sprite.Group.update(self)  XXX
         for sprite in self.sprites():
@@ -45,6 +48,7 @@ class Stage(pygame.sprite.Group):
         self._draw_raw(self, screen)
         if self._dialog:
             self._dialog._render(screen)
+            
             
     def _on_mouse_down(self, event):
         #TODO: distinguish click vs. drag
@@ -85,15 +89,38 @@ class Stage(pygame.sprite.Group):
         for sp in self.sprites():
             sp._on_key_down(event)
             
-    def add_backdrop(self, image:Union[str,pygame.Surface]):
+    def add_backdrop(self, image:Union[str,pygame.Surface], name:str=None):
+        """
+        @param image Either a filename or an already converted Surface
+        @param name (optional) A name to use for this backdrop.  If omitted,
+               then a name is generated from its 0-based index.
+        """
         if isinstance(image, str):
             im = pygame.image.load(image)
             im.convert()
+            #TODO: scale image to window
         elif isinstance(image, pygame.Surface):
             im = image
         else:
             raise TypeError("I don't know what this backdrop is")
-        self._backdrops.append(im)
+        # Resize to screen.  TODO: may warp
+        im = pygame.transform.smoothscale(im, scratchypy.window.get_window().size)
+        
+        name = name if name else "backdrop" + str(len(self._backdrops))
+        self._backdrops.append((name, im))
+        
+    def add_backdrops(self, *backdrops, **kwBackdrops):
+        """
+        Adds several backdrops at once.
+        @param backdrops Positional arguments adding an arbitrary number of
+               backdrops in order, of things compatible with add_backdrop()
+        @param kwBackdrops Keyword arguments adding backdrops with the name as 
+               the key, and a value compatible with add_backdrop().
+        """
+        for b in backdrops:
+            self.add_backdrop(b)
+        for k,v in kwBackdrops.items():
+            self.add_backdrop(v, name=k)
     
     def add(self, *sprites):
         # overrides Group impl to also track names
@@ -107,14 +134,49 @@ class Stage(pygame.sprite.Group):
     #################################################
     @property
     def backdrop_name(self) -> str:
-        return "TODO"
+        if self._backdropId < 0:
+            return "(default)"
+        
     
     @property
     def backdrop_number(self) -> int:
         """
-        Note: starts at 0
+        Note: starts at 0.  May be -1 if there are no backdrops at all.
         """
         return self._backdropId
+    
+    def switch_backdrop_to(self, nameOrIndex:Union[str,int]):
+        if isinstance(nameOrIndex, str):
+            for idx, bdTup in enumerate(self._backdrops):
+                if bdTup[0] == nameOrIndex:
+                    self._backdropId = idx
+            else:
+                raise KeyError("No backdrop named " + nameOrIndex)
+        elif isinstance(nameOrIndex, int):
+            if nameOrIndex < 0 or nameOrIndex >= len(self._backdrops):
+                raise IndexError("No backdrop at (0-based) index %d" % nameOrIndex)
+            self._backdropId = nameOrIndex
+        else:
+            raise TypeError("Unknown backdrop id")
+        
+    async def switch_backdrop_and_wait(self):
+        # TODO: should switch, call any callbacks for when switched, and return
+        # that callback's future.
+        raise NotImplementedError()
+        
+    def next_backdrop(self):
+        if self._backdrops:
+            self._backdropId = (self._backdropId + 1) % len(self._backdrops)
+            
+    def previous_backdrop(self):
+        if self._backdrops:
+            if self._backdropId < 0:
+                self._backdropId = 0 # so it will roll to last image below
+            self._backdropId = (self._backdropId - 1) % len(self._backdrops)
+            
+    def random_backdrop(self):
+        if self._backdrops:
+            self._backdropId = random.randint(0, len(self._backdrops))
     
     #################################################
     ##                  EVENTS

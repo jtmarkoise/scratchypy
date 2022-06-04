@@ -61,7 +61,8 @@ class Window:
     def set_background_color(self, color:pygame.color.Color):
         self._backgroundColor = color
 
-    def get_stage(self):
+    @property
+    def stage(self):
         return self._stage
     
     def set_stage(self, newStage):
@@ -230,9 +231,9 @@ def get_window():
     return _window
 
 def get_stage():
-    return get_window().get_stage()
+    return get_window().stage
 
-def start(windowSize=None, fullScreen=False, backgroundColor=None):
+def start(whenStarted=None, windowSize=None, fullScreen=False, backgroundColor=None):
     global _window
     if windowSize:
         _window.set_size(*windowSize)
@@ -240,4 +241,6 @@ def start(windowSize=None, fullScreen=False, backgroundColor=None):
         _window.set_fullscreen()
     if backgroundColor:
         _window.set_background_color(backgroundColor)
+    if whenStarted:
+        _window.stage.when_started(whenStarted)
     _window.run()  #forever

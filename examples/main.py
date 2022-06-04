@@ -11,6 +11,15 @@ txt = None
 async def init(stage):
     global sp1, sp2, txt
     print("init")
+    
+    stage.add_backdrops(main="assets/background1.jpg")
+    stage.forever(tick)
+    stage.when_clicked(stageClick)
+    stage.when_key_pressed('a', stageKey)
+    stage.when_key_pressed('x', changeBg)
+    stage.when_drawing(drawExtra)
+    
+    
     frames = image.loadPattern("assets/axolotl*.png")
     # Make the tail wag both ways
     frames.extend(reversed(frames[:-1]))
@@ -83,6 +92,9 @@ def stageClick(pos):
     print("FPS: %f" % get_window().actual_fps)
     print(sp1.direction_to((200,200)))
     
+def changeBg(stage):
+    stage.next_backdrop()
+    
 def drawExtra(stage, surface):
     pygame.draw.rect(surface, color.BLUE, pygame.Rect(200,200,2,2), width=1)
     
@@ -91,14 +103,7 @@ def onHello(**kwargs):
     print(kwargs["who"])
 
 if __name__ == '__main__':
-    stage = get_stage()
-    stage.when_started(init)
-    stage.forever(tick)
-    stage.when_clicked(stageClick)
-    stage.when_key_pressed('a', stageKey)
-    stage.when_drawing(drawExtra)
-    #start()
-    start()
+    start(init)
     
     
     
