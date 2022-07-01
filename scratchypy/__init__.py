@@ -1,11 +1,14 @@
-'''
-Created on Mar 25, 2022
+# Copyright 2022 Mark Malek
+# See LICENSE file for full license terms. 
 
-@author: markoise
-'''
+import pygame
 
-from . import sprite, stage, window, color, sound, image, thread, text
-from .sprite import *
-from .stage import *
+pygame.init()
+VERSION = (0,1)
+print("ScratchyPy 0.01")
+
+from . import sprite, stage, window, color, sound, image, text
 from .window import *
-from .decorator import *
+from .stage import *
+from .sprite import *
+from .util import *
