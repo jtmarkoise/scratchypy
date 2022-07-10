@@ -236,19 +236,19 @@ class Sprite(pygame.sprite.Sprite):
         """
         TODO: add padding
         """
-        winx,winy = get_window().window_size()
+        winx,winy = get_window().size
         if self._rect.left < 0:
             self._x = self._rect.w / 2
-            self.point_in_direction(-self.direction())
+            self.point_in_direction(-self.direction)
         if self._rect.right >= winx:
             self._x = winx - self.rect.w / 2
-            self.point_in_direction(-self.direction())
+            self.point_in_direction(-self.direction)
         if self._rect.top < 0:
             self._y = self._rect.h / 2
-            self.point_in_direction(180-self.direction())
+            self.point_in_direction(180-self.direction)
         if self._rect.bottom >= winy:
             self._y = winy - self._rect.h / 2
-            self.point_in_direction(180-self.direction())
+            self.point_in_direction(180-self.direction)
             
     def if_on_edge_snap(self, padding=0):
         pass #TODO
@@ -559,9 +559,9 @@ class Sprite(pygame.sprite.Sprite):
             return math.sqrt((x2-x1)**2 + (y2-y1)**2)
         
         if isinstance(what, pygame.sprite.Sprite):
-            return dist(self.position(), what.position())
+            return dist(self.position, what.position)
         elif isinstance(what, tuple):  #coordinates
-            return dist(self.position(), what)
+            return dist(self.position, what)
         else:
             raise ValueError("Unknown type given to distance_to()")
         

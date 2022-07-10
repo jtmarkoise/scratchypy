@@ -207,8 +207,8 @@ class Window:
         loop.run_forever()
         # drain cancellations
         #print("Cancelling tasks")
-        for task in asyncio.Task.all_tasks():
-            task.cancel()
+        #for task in asyncio.all_tasks():
+            #task.cancel()
         try:
             loop.run_until_complete(asyncio.gather(*asyncio.Task.all_tasks()))
         except:
