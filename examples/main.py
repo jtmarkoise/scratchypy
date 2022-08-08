@@ -1,7 +1,8 @@
 # Copyright 2022 Mark Malek
 # See LICENSE file for full license terms. 
 
-import random
+import sys, random
+sys.path.append("..")
 from scratchypy import *
 from pygame.locals import *
 

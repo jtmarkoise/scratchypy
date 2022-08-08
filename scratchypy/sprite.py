@@ -461,7 +461,7 @@ class Sprite(pygame.sprite.Sprite):
     def _on_key_down(self, event):
         handler = self._keyHandlers.get(event.key)
         if handler:
-            handler(self)
+            handler()
     
     def when_clicked(self, handler):
         """
@@ -637,7 +637,7 @@ class Sprite(pygame.sprite.Sprite):
         """
         Called once per frame to do updates.
         """
-        self._on_tick(self)
+        self._on_tick()
     
     
 class TextSprite(Sprite):

@@ -47,6 +47,10 @@ class Window:
         self._running = False
         self._rollingFrameSec = _RollingAverage()
         self._lastDraw = time.perf_counter() # high resolution timer
+        self._debug = False
+        
+    def set_debug(self, val=True):
+        self._debug = val
         
     def set_size(self, width, height):
         """
@@ -202,6 +206,8 @@ class Window:
         util.set_ui_thread()
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
+        loop.set_debug(self._debug)
+        loop.slow_callback_duration = 1 / self.fps
         loop.call_soon(self._stage._start)
         loop.call_soon(self._async_tick, screen)
         loop.run_forever()
@@ -233,7 +239,7 @@ def get_window():
 def get_stage():
     return get_window().stage
 
-def start(whenStarted=None, windowSize=None, fullScreen=False, backgroundColor=None):
+def start(whenStarted=None, windowSize=None, fullScreen=False, backgroundColor=None, asyncioDebug=False):
     global _window
     if windowSize:
         _window.set_size(*windowSize)
@@ -243,4 +249,6 @@ def start(whenStarted=None, windowSize=None, fullScreen=False, backgroundColor=N
         _window.set_background_color(backgroundColor)
     if whenStarted:
         _window.stage.when_started(whenStarted)
+    if asyncioDebug:
+        _window.set_debug(True)
     _window.run()  #forever
