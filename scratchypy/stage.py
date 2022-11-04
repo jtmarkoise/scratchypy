@@ -21,31 +21,31 @@ class Stage(pygame.sprite.Group):
         Constructor
         '''
         pygame.sprite.Group.__init__(self)
-        self._on_start = EventCallback(self, None)
-        self._on_tick = EventCallback(self, None)
+        self._on_start = EventCallback(self, None, name="Stage.when_started")
+        self._on_tick = EventCallback(self, None, name="Stage.each_tick")
         # list of (name, surface) tuples
         self._backdrops = []
         self._backdropId = -1 #TODO: gotta be one default
         self._name_lookup = {}
-        self._onClick = EventCallback(self, None)
+        self._on_click = EventCallback(self, None, name="Stage.when_clicked")
         self._allClickEvents = False
         # Dict of key->handler
         self._keyHandlers = {}
         self._dialog = None
-        self._draw_raw = EventCallback(self, None)
+        self._draw_raw = EventCallback(self, None, name="Stage.when_drawing")
         
     def _start(self):
-        self._on_start(self)
+        self._on_start()
         
     def _update(self, screen):
         if self._backdropId >= 0:
             screen.blit(self._backdrops[self._backdropId][1], (0,0))
-        self._on_tick(self)
+        self._on_tick()
         #pygame.sprite.Group.update(self)  XXX
         for sprite in self.sprites():
             sprite.update()
             sprite._render(screen)
-        self._draw_raw(self, screen)
+        self._draw_raw(screen)
         if self._dialog:
             self._dialog._render(screen)
             
@@ -72,10 +72,10 @@ class Stage(pygame.sprite.Group):
             if sp._rect.collidepoint(event.pos) and sp._mask.get_at(spPos) == 1:
                 handled=True
                 # Hit - call the sprite's handler
-                sp._on_click(sp, spPos) # Todo: what params to pass?
+                sp._on_click(spPos) # Todo: what params to pass?
         # send event to the stage if registered
-        if self._onClick and (self._allClickEvents or not handled):
-            self._onClick(event.pos)
+        if self._on_click and (self._allClickEvents or not handled):
+            self._on_click(event.pos)
             
     def _on_key_down(self, event):
         if self._dialog:
@@ -199,8 +199,7 @@ class Stage(pygame.sprite.Group):
         self._keyHandlers[intkey] = EventCallback(self, functionToCall)
         
     def forever(self, functionToCall):
-        #self._on_tick = functionToCall
-        self._on_tick = EventCallback(self, functionToCall)
+        self._on_tick.set(functionToCall)
     each_tick = forever
         
     def when_clicked(self, handler, allClicks=False):
@@ -211,7 +210,7 @@ class Stage(pygame.sprite.Group):
         if not inspect.isfunction(handler):
             raise TypeError("callback is not a function")
         
-        self._onClick = EventCallback(self, handler)
+        self._on_click = EventCallback(self, handler)
         self._allClickEvents = allClicks
         
     def broadcast(self, messageName, **kwargs):
