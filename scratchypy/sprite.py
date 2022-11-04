@@ -663,6 +663,7 @@ class TextSprite(Sprite):
     def set_text(self, text):
         surface = self._render_text(text)
         self._costumes = [ surface ]
+        self._applyImage()
         
         
 class AnimatedSprite(Sprite):
