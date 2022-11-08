@@ -23,7 +23,9 @@ _idCounter = 0
 
 class Sprite(pygame.sprite.Sprite): 
     
-    def __init__(self, costumes, x=0, y=0, name=None, size=None, stage=None):
+    def __init__(self, costumes,
+                 x=0, y=0, topleft=None,
+                 name=None, size=None, stage=None):
         """
         Like Scratch, x,y is in the center of the sprite.
         Where that is may change based on the costume.
@@ -65,6 +67,9 @@ class Sprite(pygame.sprite.Sprite):
         # TODO: have a mode to keep on screen
         self._loadCostumes(costumes if isinstance(costumes, list) else [ costumes ])
         #TODO: assert at least one
+        #Easy way to position by topleft instead
+        if topleft:
+            self.go_rect(topleft=topleft)
         
     def _loadCostumes(self, listOfImages):
         for im in listOfImages:
@@ -157,6 +162,14 @@ class Sprite(pygame.sprite.Sprite):
         self._x = x
         self._y = y
         self._rect = self._image.get_rect(center=(self._x, self._y))
+        
+    def go_rect(self, **kwargs):
+        """
+        Go to a position determined by the keywords accepted by pygame.Rect.
+        """
+        self._rect = self._image.get_rect(**kwargs)
+        self._x = self._rect.centerx
+        self._y = self._rect.centery
         
     async def glide_to_and_wait(self, x:float, y:float, seconds:float):
         nframes = get_window().fps * seconds
@@ -647,16 +660,19 @@ class TextSprite(Sprite):
     costume.
     This is a simple-to-use sprite on top of pygame.font.
     """
-    def __init__(self, text, color=color.BLACK, x=0, y=0, name=None, maxWidth=320):
+    def __init__(self, text, color=color.BLACK, size=50,
+                 x=0, y=0, topleft=None,
+                 name=None, maxWidth=320):
         self._maxWidth = maxWidth
         self._color = color
+        self._size = size
         surface = self._render_text(text)
-        Sprite.__init__(self, surface, x=x, y=y, name=name)
+        Sprite.__init__(self, surface, x=x, y=y, topleft=topleft, name=name)
     
     def _render_text(self, text):
         """
         """
-        font = pygame.font.SysFont("sans serif", 50) #TODO names
+        font = pygame.font.SysFont("sans serif", self._size) #TODO names
         bounds = pygame.Rect(0,0,self._maxWidth,320)
         return scratchypy.text.render_text(font, text, bounds, self._color)
     

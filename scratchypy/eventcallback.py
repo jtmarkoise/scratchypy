@@ -115,7 +115,8 @@ class EventCallback:
         """
         try:
             await self._cb(self._sender, *args)
-        except CanceledException as cncl:
+            print("Async cb done")
+        except asyncio.exceptions.CancelledError:
             pass
         except Exception as ex:
             print("Callback error: %s: %s" % (self._name, ex))
