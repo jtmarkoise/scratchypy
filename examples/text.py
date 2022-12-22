@@ -45,6 +45,9 @@ async def init(stage):
     
     highlightText2 = TextSprite("highlight with wrap " * 3, size=30, bgcolor=color.GREEN, topleft=(0,400))
     stage.add(highlightText2)
+    
+    multiLine = TextSprite("multiline1\nline2\nline3", size=30, topleft=(0,460))
+    stage.add(multiLine)
 
 def tick(stage):
     #print("tick")

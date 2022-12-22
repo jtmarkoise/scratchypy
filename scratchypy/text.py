@@ -10,26 +10,27 @@ from scratchypy import color
 def render_text(font, text, rect, color=color.BLACK, bgcolor=None):
     maxWidth = rect.w
     
-    # word wrap.  TODO: honor existing newlines
+    # word wrap
     lines = []
-    words = re.split('\\s', text)
-    i = 1
-    while i <= len(words):
-        w,_ = font.size(' '.join(words[:i]))
-        if w > maxWidth:
-            # one word too many, unless it's the only word, might truncate
-            if i == 0:
-                lines.append(words[0])
-                words = words[1:]
+    for inLine in re.split('\n', text):
+        words = re.split('\\s', inLine)
+        i = 1
+        while i <= len(words):
+            w,_ = font.size(' '.join(words[:i]))
+            if w > maxWidth:
+                # one word too many, unless it's the only word, might truncate
+                if i == 0:
+                    lines.append(words[0])
+                    words = words[1:]
+                else:
+                    lines.append(' '.join(words[:i-1]))
+                    words = words[i-1:]
+                i=0
             else:
-                lines.append(' '.join(words[:i-1]))
-                words = words[i-1:]
-            i=0
-        else:
-            i+=1
-    # add remaining
-    if words:
-        lines.append(' '.join(words))
+                i+=1
+        # add remaining
+        if words:
+            lines.append(' '.join(words))
     
     # calculate size of single render surface
     surfaces = [font.render(line, True, color) for line in lines]
