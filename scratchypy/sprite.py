@@ -24,7 +24,7 @@ _idCounter = 0
 class Sprite(pygame.sprite.Sprite): 
     
     def __init__(self, costumes,
-                 x=0, y=0, topleft=None,
+                 x=0, y=0, topleft=None, topright=None,
                  name=None, size=None, stage=None):
         """
         Like Scratch, x,y is in the center of the sprite.
@@ -67,9 +67,11 @@ class Sprite(pygame.sprite.Sprite):
         # TODO: have a mode to keep on screen
         self._loadCostumes(costumes if isinstance(costumes, list) else [ costumes ])
         #TODO: assert at least one
-        #Easy way to position by topleft instead
+        #Easy way to position by topleft/topright instead
         if topleft:
             self.go_rect(topleft=topleft)
+        elif topright:
+            self.go_rect(topright=topright)
         
     def _loadCostumes(self, listOfImages):
         for im in listOfImages:
@@ -660,26 +662,42 @@ class TextSprite(Sprite):
     costume.
     This is a simple-to-use sprite on top of pygame.font.
     """
-    def __init__(self, text, color=color.BLACK, size=50,
-                 x=0, y=0, topleft=None,
-                 name=None, maxWidth=320):
+    def __init__(self, text, color=color.BLACK, 
+                 font=None, size=50,
+                 x=0, y=0, topleft=None, topright=None,
+                 name=None, maxWidth=320,
+                 bgcolor=None):
+        """
+        If x,y is given, the sprite is center-justified like normal.
+        If topleft is given, the left edge remains constant when text changes.
+        If topright is given, the right edge remains constant.
+        If a custom font is given, then 'size' is ignored.
+        """
         self._maxWidth = maxWidth
         self._color = color
         self._size = size
+        self._font = font if font else pygame.font.SysFont("sans serif", self._size)
+        self._topleft = topleft
+        self._topright = topright
+        self._bgcolor = bgcolor
         surface = self._render_text(text)
         Sprite.__init__(self, surface, x=x, y=y, topleft=topleft, name=name)
     
     def _render_text(self, text):
         """
         """
-        font = pygame.font.SysFont("sans serif", self._size) #TODO names
         bounds = pygame.Rect(0,0,self._maxWidth,320)
-        return scratchypy.text.render_text(font, text, bounds, self._color)
+        return scratchypy.text.render_text(self._font, text, bounds, self._color, self._bgcolor)
     
     def set_text(self, text):
         surface = self._render_text(text)
         self._costumes = [ surface ]
         self._applyImage()
+        # readjust if we're justified
+        if self._topleft:
+            self.go_rect(topleft=self._topleft)
+        if self._topright:
+            self.go_rect(topright=self._topright)
         
         
 class AnimatedSprite(Sprite):

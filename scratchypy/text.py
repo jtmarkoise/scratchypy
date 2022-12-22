@@ -7,10 +7,10 @@ import pygame.surface
 from pygame.locals import *
 from scratchypy import color
 
-def render_text(font, text, rect, color=color.BLACK):
+def render_text(font, text, rect, color=color.BLACK, bgcolor=None):
     maxWidth = rect.w
     
-    # word wrap
+    # word wrap.  TODO: honor existing newlines
     lines = []
     words = re.split('\\s', text)
     i = 1
@@ -34,12 +34,20 @@ def render_text(font, text, rect, color=color.BLACK):
     # calculate size of single render surface
     surfaces = [font.render(line, True, color) for line in lines]
     if len(surfaces) == 1:
-        return surfaces[0]  #TODO: may not honor maxHeight
+        if bgcolor:
+            bg = surfaces[0].copy()
+            bg.fill(bgcolor)
+            bg.blit(surfaces[0], (0,0))
+            return bg
+        else:
+            return surfaces[0]  #TODO: may not honor maxHeight
     # else blit them all to a single surface
     width = min(maxWidth, max([s.get_size()[0] for s in surfaces]))
     totalHeight = min(rect.h, font.get_linesize() * len(surfaces))
     #TODO: nicer cutoff of lines^^^
     bigsurf = pygame.surface.Surface((width, totalHeight), pygame.SRCALPHA, 32)
+    if bgcolor:
+        bigsurf.fill(bgcolor)
     
     # render the lines
     y = 0
