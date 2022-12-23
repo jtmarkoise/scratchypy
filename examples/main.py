@@ -104,7 +104,7 @@ def onHello(**kwargs):
     print(kwargs["who"])
 
 if __name__ == '__main__':
-    start(init)
+    start(whenStarted=init)
     
     
     

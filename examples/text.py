@@ -43,10 +43,10 @@ async def init(stage):
     highlightText = TextSprite("highlight", size=40, bgcolor=color.YELLOW, topleft=(0,360))
     stage.add(highlightText)
     
-    highlightText2 = TextSprite("highlight with wrap " * 3, size=30, bgcolor=color.GREEN, topleft=(0,400))
+    highlightText2 = TextSprite("highlight with wrap " * 6, size=30, bgcolor=color.GREEN, topleft=(0,400))
     stage.add(highlightText2)
     
-    multiLine = TextSprite("multiline1\nline2\nline3", size=30, topleft=(0,460))
+    multiLine = TextSprite("multiline1 with some wrapping stuff center justified\nline2\nline3", size=30, maxWidth=320, topleft=(0,460), justification='center')
     stage.add(multiLine)
 
 def tick(stage):
@@ -60,7 +60,7 @@ def tick(stage):
 
 
 if __name__ == '__main__':
-    start(init)
+    start(whenStarted=init)
     
     
     

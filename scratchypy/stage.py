@@ -33,6 +33,17 @@ class Stage(pygame.sprite.Group):
         self._keyHandlers = {}
         self._dialog = None
         self._draw_raw = EventCallback(self, None, name="Stage.when_drawing")
+        # call subclass init
+        self.on_init()
+        
+    def on_init(self):
+        """
+        If you inherit from Stage to group your scenes and sprites, override
+        this to create and add your sprites.
+        This is slightly easier than having to make your own __init__() and
+        needing to call super().__init__(), although that is still valid.
+        """
+        pass
         
     def _start(self):
         self._on_start()

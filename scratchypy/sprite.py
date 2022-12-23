@@ -66,18 +66,22 @@ class Sprite(pygame.sprite.Sprite):
         
         # TODO: have a mode to keep on screen
         self._loadCostumes(costumes if isinstance(costumes, list) else [ costumes ])
-        #TODO: assert at least one
-        #Easy way to position by topleft/topright instead
+        #TODO: assert at least one costume
+        
+        #Easy way to position by topleft/topright instea
         if topleft:
             self.go_rect(topleft=topleft)
         elif topright:
             self.go_rect(topright=topright)
+            
+        if stage is not None:
+            stage.add(self)
         
     def _loadCostumes(self, listOfImages):
         for im in listOfImages:
             if isinstance(im, str):
                 image = pygame.image.load(im)
-                image.convert()
+                image.convert(32, pygame.SRCALPHA)
             elif isinstance(im, pygame.Surface):
                 image = im
             self._costumes.append(image)
@@ -550,7 +554,7 @@ class Sprite(pygame.sprite.Sprite):
         
     def touching_edge(self):
         #TODO: the mask may not necessarily go to the bounding rectangle
-        w, h = get_window().window_size()
+        w, h = get_window().size
         return self._rect.left < 0 \
             or self._rect.top < 0 \
             or self._rect.right >= w \
@@ -665,12 +669,15 @@ class TextSprite(Sprite):
     def __init__(self, text, color=color.BLACK, 
                  font=None, size=50,
                  x=0, y=0, topleft=None, topright=None,
-                 name=None, maxWidth=320,
-                 bgcolor=None):
+                 justification='left',
+                 name=None, maxWidth=600,
+                 bgcolor=None, stage=None):
         """
-        If x,y is given, the sprite is center-justified like normal.
+        If x,y is given, the sprite is positioned from center like normal.
         If topleft is given, the left edge remains constant when text changes.
         If topright is given, the right edge remains constant.
+        The 'justification' (left, right, center) applies to text that has or
+        wraps to multiple lines, and is the alignment within the sprite.
         If a custom font is given, then 'size' is ignored.
         """
         self._maxWidth = maxWidth
@@ -679,15 +686,16 @@ class TextSprite(Sprite):
         self._font = font if font else pygame.font.SysFont("sans serif", self._size)
         self._topleft = topleft
         self._topright = topright
+        self._justification = justification
         self._bgcolor = bgcolor
         surface = self._render_text(text)
-        Sprite.__init__(self, surface, x=x, y=y, topleft=topleft, name=name)
+        Sprite.__init__(self, surface, x=x, y=y, topleft=topleft, name=name, stage=stage)
     
     def _render_text(self, text):
         """
         """
         bounds = pygame.Rect(0,0,self._maxWidth,320)
-        return scratchypy.text.render_text(self._font, text, bounds, self._color, self._bgcolor)
+        return scratchypy.text.render_text(self._font, text, bounds, self._color, self._bgcolor, self._justification)
     
     def set_text(self, text):
         surface = self._render_text(text)
@@ -707,7 +715,7 @@ class AnimatedSprite(Sprite):
     and stop of the animation.  This sprite inherits from Sprite
     and you can still move it and do any other Sprite actions.
     """
-    def __init__(self, costumes, fps:int=5, x=0, y=0, name=None, size=None):
+    def __init__(self, costumes, fps:int=5, x=0, y=0, name=None, size=None, stage=None):
         """
         @param costumes: List of frame/costume images.  See Sprite doc.
         @param fps: Frames Per Second you want the animation to play at,
@@ -716,7 +724,7 @@ class AnimatedSprite(Sprite):
                with the overall framerate.
                
         """
-        super().__init__(costumes, x=x, y=y, name=name, size=size)
+        super().__init__(costumes, x=x, y=y, name=name, size=size, stage=stage)
         FPS = get_window().fps
         if fps <= 0 or fps > FPS:
             raise ValueError("fps must be 1..FPS")

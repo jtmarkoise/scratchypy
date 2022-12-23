@@ -7,7 +7,7 @@ import pygame.surface
 from pygame.locals import *
 from scratchypy import color
 
-def render_text(font, text, rect, color=color.BLACK, bgcolor=None):
+def render_text(font, text, rect, color=color.BLACK, bgcolor=None, justification='left'):
     maxWidth = rect.w
     
     # word wrap
@@ -38,7 +38,7 @@ def render_text(font, text, rect, color=color.BLACK, bgcolor=None):
     if len(surfaces) == 1 and not bgcolor:
         return surfaces[0]  #TODO: may not honor maxHeight
     # else blit them all to a single surface
-    width = min(maxWidth, max([s.get_size()[0] for s in surfaces]))
+    width = min(maxWidth, max([s.get_width() for s in surfaces]))
     totalHeight = min(rect.h, font.get_linesize() * len(surfaces))
     #TODO: nicer cutoff of lines^^^
     bigsurf = pygame.surface.Surface((width, totalHeight), pygame.SRCALPHA, 32)
@@ -48,7 +48,11 @@ def render_text(font, text, rect, color=color.BLACK, bgcolor=None):
     # render the lines
     y = 0
     for surf in surfaces:
-        bigsurf.blit(surf, (0,y))
+        # Align based on justification.  For long words, may truncate
+        x = width - surf.get_width() if justification=='right' else \
+            (width - surf.get_width())/2 if justification=='center' else \
+            0
+        bigsurf.blit(surf, (x,y))
         y += font.get_linesize()
     return bigsurf
 

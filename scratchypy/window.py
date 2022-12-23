@@ -73,7 +73,7 @@ class Window:
         #TODO: more to it than this?
         # cleanup old, but some events might still reference
         self._stage = newStage
-    
+        self._stage._start()
     
     @property
     def fps(self) -> int:
@@ -239,7 +239,31 @@ def get_window():
 def get_stage():
     return get_window().stage
 
-def start(whenStarted=None, windowSize=None, fullScreen=False, backgroundColor=None, asyncioDebug=False):
+def set_stage(newStage):
+    """
+    Convenience to set the current stage on the window.
+    """
+    get_window().set_stage(newStage)
+
+def start(stage=None, whenStarted=None, windowSize=None, fullScreen=False, backgroundColor=None, asyncioDebug=False):
+    """
+    Shows the window and starts the event loop.  Never returns.
+    There are many options that are all optional.  It is best to
+    always set these using the keyword parameters.
+    @param stage If you make a custom stage, you can supply it here
+           and it will be set as the window's stage.
+    @param whenStarted A function to call to perform initialization.
+           This is usually only used if you are doing a simple
+           functional program.  If you're organizing using custom
+           stages, then you'd probably make your sprites in 
+           stage.on_init().
+    @param windowSize A tuple of (width, height) for how big to make the window.
+           Default (800, 600).
+    @param fullScreen If true, use the full screen and windowSize is ignored.
+    @param backgroundColor A scratchypy.color or pygame.color to use as the 
+           window background, default WHITE.
+    @param asyncioDebug Advanced logging of Python asyncio calls.
+    """
     global _window
     if windowSize:
         _window.set_size(*windowSize)
@@ -247,6 +271,8 @@ def start(whenStarted=None, windowSize=None, fullScreen=False, backgroundColor=N
         _window.set_fullscreen()
     if backgroundColor:
         _window.set_background_color(backgroundColor)
+    if stage is not None:
+        _window.set_stage(stage)
     if whenStarted:
         _window.stage.when_started(whenStarted)
     if asyncioDebug:
