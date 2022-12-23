@@ -34,14 +34,9 @@ def render_text(font, text, rect, color=color.BLACK, bgcolor=None):
     
     # calculate size of single render surface
     surfaces = [font.render(line, True, color) for line in lines]
-    if len(surfaces) == 1:
-        if bgcolor:
-            bg = surfaces[0].copy()
-            bg.fill(bgcolor)
-            bg.blit(surfaces[0], (0,0))
-            return bg
-        else:
-            return surfaces[0]  #TODO: may not honor maxHeight
+    # If only one and we can return it as-is.
+    if len(surfaces) == 1 and not bgcolor:
+        return surfaces[0]  #TODO: may not honor maxHeight
     # else blit them all to a single surface
     width = min(maxWidth, max([s.get_size()[0] for s in surfaces]))
     totalHeight = min(rect.h, font.get_linesize() * len(surfaces))
