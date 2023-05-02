@@ -102,6 +102,8 @@ class Stage(pygame.sprite.Group):
             
     def add_backdrop(self, image:Union[str,pygame.Surface], name:str=None):
         """
+        Add a background image to the stage.  If this is the first
+        one added, it will be automatically switched to.
         @param image Either a filename or an already converted Surface
         @param name (optional) A name to use for this backdrop.  If omitted,
                then a name is generated from its 0-based index.
@@ -119,6 +121,8 @@ class Stage(pygame.sprite.Group):
         
         name = name if name else "backdrop" + str(len(self._backdrops))
         self._backdrops.append((name, im))
+        if self._backdropId < 0:
+            self.switch_backdrop_to(0)
         
     def add_backdrops(self, *backdrops, **kwBackdrops):
         """

@@ -69,6 +69,8 @@ def tick(stage):
         sp1.change_y_by(30)
     if w.key_pressed("c"):
         print(sp1.y_position)
+        sp2 = sp1.clone("sp2", stage)
+        sp2.glide_to(0,0,5)
         
 async def stageKey(stage):
     #sp1.change_x_by(30)

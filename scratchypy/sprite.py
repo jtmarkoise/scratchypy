@@ -6,6 +6,7 @@ import pygame.font
 import math
 import asyncio
 import inspect
+import copy
 from typing import Literal, Tuple, Union
 from scratchypy.window import get_window
 from scratchypy import color
@@ -523,6 +524,26 @@ class Sprite(pygame.sprite.Sprite):
     #################################################
     def forever(self, functionToCall):
         self._on_tick.set(functionToCall)
+        
+    def clone(self, name=None, stage=None):
+        """
+        Make a shallow clone of this sprite.  Costumes are not reloaded
+        but can be manipulated independently.  The new sprite is at the same
+        location and with the all the same properties as this sprite.
+        You can change properties or call functions on the new returned object.
+        @param name A unique name for the new sprite, or one will be
+               automatically assigned.
+        @param stage If not None, will be automatically added to the stage.
+        """
+        newObj = copy.copy(self)
+        global _idCounter
+        _idCounter += 1
+        newObj._name = name if name else "sprite" + str(_idCounter)
+        newObj._costumes = self._costumes.copy()
+        newObj.groups = self.groups.copy()
+        if stage is not None:
+            stage.add(newObj)
+        return newObj
     
     #################################################
     ##                  SENSING
