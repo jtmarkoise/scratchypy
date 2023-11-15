@@ -18,18 +18,26 @@ class EventCallback:
     
     '''
 
-    def __init__(self, sender, cb, name=''):
+    def __init__(self, obj, cb, name=''):
         '''
-        @param sender The object initiating the callback (e.g. a certain stage or sprite).
+        @param obj The object initiating the callback (e.g. a certain stage or sprite).
                Usually this doesn't change for the lifetime of the callback setting.
         @param cb The callback.  May be a regular or async function, or None for no action.
         @param name Optional name used for debugging.  If omitted, this will try to find
                the __name__ of the callback function.
         '''
-        self._sender = sender
+        self._obj = obj
         self._task = None
         self._name = name if name else cb.__name__ if cb else '(none)'
         self.set(cb)
+        
+    def clone(self, newObj):
+        """
+        Clone this handler to make a copy using the new object.  Used during
+        Sprite cloning to attach the same callbacks to the new object.
+        Any existing tasks are not cloned.
+        """
+        return EventCallback(newObj, self._cb, self._name)
         
     def name(self):
         """ @return the name given to this callback, mostly for debugging """
@@ -100,7 +108,7 @@ class EventCallback:
     def _safe_call_sync(self, *args):
         "Call the callback synchronously while handling exceptions"
         try:
-            self._cb(self._sender, *args)
+            self._cb(self._obj, *args)
         except Exception as ex:
             print("Callback error: %s: %s" % (self._name, ex))
             traceback.print_exception(ex, ex, ex.__traceback__)
@@ -114,8 +122,7 @@ class EventCallback:
         using add_done_callback(), which posts it additionally and could run later.
         """
         try:
-            await self._cb(self._sender, *args)
-            print("Async cb done")
+            await self._cb(self._obj, *args)
         except asyncio.exceptions.CancelledError:
             pass
         except Exception as ex:

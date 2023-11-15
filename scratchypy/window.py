@@ -272,7 +272,7 @@ def start(stage=None, whenStarted=None, windowSize=None, fullScreen=False, backg
     if backgroundColor:
         _window.set_background_color(backgroundColor)
     if stage is not None:
-        _window.set_stage(stage)
+        _window._stage = stage # don't start it yet until loop is made
     if whenStarted:
         _window.stage.when_started(whenStarted)
     if asyncioDebug:

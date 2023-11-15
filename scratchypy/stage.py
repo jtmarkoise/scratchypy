@@ -42,6 +42,8 @@ class Stage(pygame.sprite.Group):
         this to create and add your sprites.
         This is slightly easier than having to make your own __init__() and
         needing to call super().__init__(), although that is still valid.
+        TODO: init vs start is confusing.  Make it work for both 'when_started'
+        and subclassing, and for both sync and async...
         """
         pass
         
@@ -198,7 +200,7 @@ class Stage(pygame.sprite.Group):
     #################################################
             
     def when_started(self, functionToCall):
-        self._on_start = EventCallback(self, functionToCall)
+        self._on_start.set(functionToCall)
         
     def when_key_pressed(self, key, functionToCall):
         #TODO cancel previous
@@ -228,9 +230,9 @@ class Stage(pygame.sprite.Group):
         self._on_click = EventCallback(self, handler)
         self._allClickEvents = allClicks
         
-    def broadcast(self, messageName, **kwargs):
-        for sp in self.sprites():
-            sp.message(messageName, **kwargs)
+    def broadcast(self, messageName, argDictionary={}, excludeOriginator=None):
+        for sp in [sp for sp in self.sprites() if sp is not excludeOriginator]:
+            sp.message(messageName, argDictionary)
             
             
     #################################################

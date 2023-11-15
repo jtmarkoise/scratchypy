@@ -77,6 +77,8 @@ class Sprite(pygame.sprite.Sprite):
             
         if stage is not None:
             stage.add(self)
+            
+        # Important: if you add any new members, you must take a look at clone()
         
     def _loadCostumes(self, listOfImages):
         for im in listOfImages:
@@ -335,7 +337,7 @@ class Sprite(pygame.sprite.Sprite):
         bubbleSurf.blit(textSurf, textRect)
         return bubbleSurf
 
-    def say(self, speechText:str):
+    def say(self, speechText:str=None):
         """ 
         Will stay indefinitely or until another say/think.
         Say None or blank to clear bubble.
@@ -485,32 +487,46 @@ class Sprite(pygame.sprite.Sprite):
     
     def when_clicked(self, handler):
         """
-        when this sprite is clicked, call the given handler
-        
+        When this sprite is clicked, call the given handler.
+        The handler is of the form:
+        ```
+        def myClickHandler(sprite, clickPosition):
+            pass
+        ```
+        Where 'sprite' is this sprite object where the click was delivered, and
+        clickPosition is the tuple (x,y) position of the click relative to the
+        sprite.
         """
         self._on_click.set(handler)
     when_this_sprite_clicked = when_clicked
     
     def when_i_receive(self, messageName:str, handlerFunction):
-        self._messageHandlers[messageName] = handlerFunction
+        """
+        Register a callback to call when this sprite receives a message with
+        the given messageName.
+        The handler is of the form:
+        ```
+        def myMessageHandler(sprite, argDictionary):
+            pass
+        ```
+        Where 'sprite' is this sprite object where the click was delivered, and
+        the argDictionary is whatever kind of extra information goes with the
+        message, as a dictionary of key, value pairs.
+        """
+        self._messageHandlers[messageName] = EventCallback(self, handlerFunction)
     
-    def message(self, messageName:str, **kwargs):
+    def message(self, messageName:str, argDictionary={}):
         """
         Sends a message to this sprite.  (Bonus extension of Scratch).
         If there is no message event handler (registered with when_i_receive()),
         for the given messageName, then the message is ignored.
         @param messageName The message name, as a string
-        @param **kwargs Optional extra parameters to give as part of the message
-        FIXME: this should post to a queue, not run handler directly
+        @param argDictionary Optional extra parameters to give as part of the message
+        FIXME: this should post to a queue, not run handler directly?
         """
         handler = self._messageHandlers.get(messageName)
         if handler:
-            # Support both simple names and advanced kwargs
-            spec = inspect.getfullargspec(handler)
-            if spec.varkw:
-                handler(**kwargs)
-            else:
-                handler()
+            handler(argDictionary)
         elif self._debug:
             print("%s: no handler found for message %s" % (self._name, messageName))
     
@@ -527,10 +543,14 @@ class Sprite(pygame.sprite.Sprite):
         
     def clone(self, name=None, stage=None):
         """
-        Make a shallow clone of this sprite.  Costumes are not reloaded
-        but can be manipulated independently.  The new sprite is at the same
-        location and with the all the same properties as this sprite.
-        You can change properties or call functions on the new returned object.
+        Make a shallow clone of this sprite.
+        Important: The cloned sprite is not automatically on the same stage as
+        the original; specify the 'stage' parameter to add the sprite to the
+        stage.
+        Costumes are not reloaded but can be manipulated independently.  
+        The new sprite is at the same location and with the all the same 
+        properties as this sprite. You can change properties or call functions 
+        on the new returned object.
         @param name A unique name for the new sprite, or one will be
                automatically assigned.
         @param stage If not None, will be automatically added to the stage.
@@ -543,6 +563,12 @@ class Sprite(pygame.sprite.Sprite):
         newObj.groups = self.groups.copy()
         if stage is not None:
             stage.add(newObj)
+        # Clone all handlers and handler dictionaries
+        newObj._on_click = self._on_click.clone(newObj)
+        newObj._on_tick = self._on_tick.clone(newObj)
+        newObj._messageHandlers = { msg:cb.clone(newObj) for (msg, cb) in self._messageHandlers.items()}
+        newObj._keyHandlers = { msg:cb.clone(newObj) for (msg, cb) in self._keyHandlers.items()}
+        
         return newObj
     
     #################################################
