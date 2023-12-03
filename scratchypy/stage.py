@@ -1,5 +1,8 @@
 # Copyright 2022 Mark Malek
 # See LICENSE file for full license terms. 
+"""
+Contains the Stage class used as a canvas to draw Sprites upon.
+"""
 
 import inspect
 import random

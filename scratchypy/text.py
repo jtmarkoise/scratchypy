@@ -1,10 +1,11 @@
 # Copyright 2022 Mark Malek
 # See LICENSE file for full license terms. 
-
+"""
+Helpers for rendering text.  Rarely needed to be used directly.
+"""
 import re
 import asyncio
 import pygame.surface
-from pygame.locals import *
 from scratchypy import color
 
 def render_text(font, text, rect, color=color.BLACK, bgcolor=None, justification='left'):

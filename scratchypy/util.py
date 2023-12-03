@@ -1,6 +1,8 @@
 # Copyright 2022 Mark Malek
 # See LICENSE file for full license terms. 
-
+"""
+Misc. utility functions.
+"""
 import asyncio
 import os
 import threading

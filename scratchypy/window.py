@@ -1,6 +1,8 @@
 # Copyright 2022 Mark Malek
 # See LICENSE file for full license terms. 
-
+"""
+Contains the top-level Window and global execution environment.
+"""
 import random
 import asyncio
 import time
@@ -245,18 +247,18 @@ def set_stage(newStage):
     """
     get_window().set_stage(newStage)
 
-def start(stage=None, whenStarted=None, windowSize=None, fullScreen=False, backgroundColor=None, asyncioDebug=False):
+def start(whenStarted=None, stage=None, windowSize=None, fullScreen=False, backgroundColor=None, asyncioDebug=False):
     """
     Shows the window and starts the event loop.  Never returns.
     There are many options that are all optional.  It is best to
     always set these using the keyword parameters.
-    @param stage If you make a custom stage, you can supply it here
-           and it will be set as the window's stage.
     @param whenStarted A function to call to perform initialization.
            This is usually only used if you are doing a simple
            functional program.  If you're organizing using custom
            stages, then you'd probably make your sprites in 
            stage.on_init().
+    @param stage If you make a custom stage, you can supply it here
+           and it will be set as the window's stage.
     @param windowSize A tuple of (width, height) for how big to make the window.
            Default (800, 600).
     @param fullScreen If true, use the full screen and windowSize is ignored.

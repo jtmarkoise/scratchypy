@@ -1,5 +1,9 @@
 # Copyright 2022 Mark Malek
 # See LICENSE file for full license terms. 
+"""
+Contains the EventCallback class for seamlessly encapsulating many different
+types of callback strategies.
+"""
 
 import asyncio
 import traceback

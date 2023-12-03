@@ -1,5 +1,9 @@
-# Copyright 2022 Mark Malek
+# Copyright 2023 Mark Malek
 # See LICENSE file for full license terms. 
+"""
+Contains the Sprite class, the base of all sprites on a stage, as well as 
+several other specialized subclasses.
+"""
 
 import pygame.sprite
 import pygame.font
@@ -25,7 +29,7 @@ _idCounter = 0
 class Sprite(pygame.sprite.Sprite): 
     
     def __init__(self, costumes,
-                 x=0, y=0, topleft=None, topright=None,
+                 x=None, y=None, topleft=None, topright=None,
                  name=None, size=None, stage=None):
         """
         Like Scratch, x,y is in the center of the sprite.
@@ -45,8 +49,9 @@ class Sprite(pygame.sprite.Sprite):
         self._mask = None  #ditto
         self._rect = None # ditto
         self._visible = True
-        self._x = x
-        self._y = y
+        winx, winy = get_window().size
+        self._x = x if x is not None else winx/2
+        self._y = y if y is not None else winy/2
         
         self._scale = 1 # 0..1..n, but API uses 0..100%..n%
         if size is not None and size >= 0: #TODO confusing name, but matches scratch
@@ -151,7 +156,7 @@ class Sprite(pygame.sprite.Sprite):
         
     def turn(self, degrees:float):
         """
-        Change the direction by the amound of degrees given in C{degrees}.
+        Change the direction by the amouny of degrees given in C{degrees}.
         A positive number is clockwise 🔃.
         A negative number is counter-clockwise 🔄.
         """

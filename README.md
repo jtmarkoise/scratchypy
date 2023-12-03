@@ -1,10 +1,18 @@
-# scratchypy
-Scratch-like library for Python using Pygame.
+# Welcome to ScratchyPy!
+ScratchyPy is a graphics-focused library for Python using [Pygame](https://www.pygame.org).
+It uses the same vocabulary as the popular [Scratch](https://scratch.mit.edu) block-based programming lanugage.
+
+Meet the mascot, Oxie, the friendly axolotl.
+<center>
+
+![logo](examples/assets/axolotl1.png)
+
+</center>
 
 ## Who's it for?
 If you feel like you've mastered the graphical programming of Scratch, or started to hit some limitations, then ScratchyPy may be a good next step into the world of system programming.
 
-[legal] This project is not affiliated with Scratch in any way.  Scratch(TM) is a trademark of the Scratch Team.  Scratch is developed by the Lifelong Kindergarten Group at the MIT Media Lab. See http://scratch.mit.edu.
+(LEGAL) *This project is not affiliated with Scratch in any way.  Scratch(TM) is a trademark of the Scratch Team.  Scratch is developed by the Lifelong Kindergarten Group at the MIT Media Lab. See [scratch.mit.edu](http://scratch.mit.edu).*
 
 ### What you need to know
 Some basic knowledge of Python is required.  There are many good introductory tutorials on the internet that can teach you the basics.
@@ -17,6 +25,32 @@ ScratchyPy requires Python 3.8 or higher.
 You'll need `pip3 install pygame`
 
 TODO: ScratchyPy is not a pip package yet; how to copy
+
+## Quick Start
+
+<table border="1">
+<tr><td> This Scratch code... </td><td>... is equivalent to this ScratchyPy</td></tr>
+<tr><td>
+
+![scratch block](doc/img/quickstart-scratch.png)
+
+</td><td>
+
+```python
+from scratchypy import *
+def startItUp(stage):
+    sprite1 = Sprite("assets/axolotl1.png")
+    stage.add(sprite1)
+    sprite1.turn(45)
+    sprite1.move(50)
+start(startItUp)
+```
+
+</td></tr>
+</table>
+
+You can run this fully-annotated example and see many others in the /examples folder.
+
 
 ## Features
 ScratchyPy does not aim to reproduce Scratch exactly and faithfully.  Python, Pygame, and general UI programming patterns work differently and this library is more of a bridge into that world using familiar concepts.
@@ -34,7 +68,9 @@ There are several areas where ScratchyPy adds on some bonus functionality on top
 ## Sharing
 What makes Scrach fun is its social coding aspect.  You can easily try out others' work and it is safe to do so in the confines of a browser.
 
-Python is a powerful system language.  It can create and delete files, do networking and downloads, and generally do anything your computer account can do.  This makes it dangerous to try out programs from people you don't know or trust, since they could very well delete all your files or install a virus.  In general, please do not share or accept programs.
+Python is a powerful system language.  It can create and delete files, do networking and downloads, and generally do anything your computer account can do.  This makes it dangerous to try out programs from people you don't know or trust, since they could very well delete all your files or install a virus.  
+> [!CAUTION]
+> Before running a shared program, make sure you trust the person who sent it to you.
 
 TODO: Safe alternatives?
 
@@ -42,9 +78,11 @@ TODO: Safe alternatives?
 See the Python design page for expert information TBD
 
 ## Support
-In short, there is none.
+In short, there is nothing official.  I hope you will enjoy learning Python
+and programming, and that a friendly community of support evolves.
 
-If you find an issue with the library itself, please open an issue on GitHub.
+If you find bug with the library itself, please open an issue on GitHub.
+Enhancement requests are welcome too (even better with a patch provided!).
 
 ## TODO
 - colors
@@ -53,29 +91,29 @@ If you find an issue with the library itself, please open an issue on GitHub.
 
 Sprite with single costume:
 
-```
+```python
 sp = Sprite("larry.png")
 ```
 
 Sprite with multiple costumes:
 
-```
+```python
 sp = Sprite(["explosion1.png", "explosion2.png"])
 ```
 
 Loading sprites with setting transparent color:
 
-```
+```python
 costume = image.load("curly.bmp", color.WHITE)
 sp = Sprite(costume)
 ```
 
 Convenient way to load separate images in an animation: image01.png, image02.png, etc.  Make the black background transparent.
 
-```
+```python
 frames = image.loadPattern("animation/image*.png", Color.BLACK)
 sp = Sprite(frames)
 ```
 
-## Graduating from ScratchyPy
+## Expanding further
 - other libs like pygame-menu and UI

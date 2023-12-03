@@ -1,5 +1,9 @@
 # Copyright 2022 Mark Malek
-# See LICENSE file for full license terms. 
+# See LICENSE file for full license terms.
+"""
+Contains functions for loading image files.
+The file types it supports are the same as what pygame.image supports.
+"""
 
 import glob
 import pygame.image
