@@ -266,12 +266,46 @@ myvar = sprite1.direction
 Note that these are properties and do not require () like function calls.
 
 </td></tr>
-
 </table>
 
 <a name="looks"></a>
 
 ### Looks
+
+<table border="1">
+<tr><th> Scratch </th><th> ScratchyPy </th></tr>
+<!-- ============================================================ -->
+<tr><td>
+
+![saythinkfor](img/saythinkfor.png)
+
+</td><td>
+
+```
+await sprite1.say_and_wait("Hello!", 2)
+await sprite1.think_and_wait("Hmm...", 2)
+```
+
+These will [await](#await) until the time is up.
+
+</td></tr>
+<!-- ============================================================ -->
+<tr><td>
+
+![saythinkf](img/saythink.png)
+    
+</td><td>
+
+```
+await sprite1.say("Hello!")
+await sprite1.think("Hmm...")
+```
+
+These will display the bubble and continue the program.
+
+</td></tr>
+
+
 
 <a name="sound"></a>
 
