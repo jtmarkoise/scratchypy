@@ -304,9 +304,115 @@ await sprite1.think("Hmm...")
 These will display the bubble and continue the program.
 
 </td></tr>
+<!-- ============================================================ -->
+<tr><td>
 
+![switchcostume](img/switchcostume.png)
+    
+</td><td>
 
+Multiple costumes can be specified when creating the Sprite.  Then the costumes 
+can be switched by telling the number here.  Remember in Python, things start 
+counting with zero!
 
+```
+sprite1 = Sprite(["costume0.png", "costume1.png", "costume2.png"])
+sprite1.switch_costume_to(2)  # picks "costume2.png"
+```
+
+</td></tr>
+
+<!-- ============================================================ -->
+<tr><td>
+
+![nextcostume](img/nextcostume.png)
+    
+</td><td>
+
+```
+sprite1 = Sprite(["costume0.png", "costume1.png", "costume2.png"])
+sprite1.next_costume()
+```
+
+</td></tr>
+<!-- ============================================================ -->
+<tr><td>
+
+![switchbackdrop](img/switchbackdrop.png)
+    
+</td><td>
+
+The backdrop is for the background of the Stage so it is on the Stage object.
+
+```
+stage.add_backdrop("background0.png")
+stage.add_backdrop("background1.png", "desert")
+stage.switch_backdrop_to(0)         # by index
+stage.switch_backdrop_to("desert")   # or by name
+```
+
+</td></tr>
+<!-- ============================================================ -->
+<tr><td>
+
+![switchbackdropandwait](img/switchbackdropandwait.png)
+    
+</td><td>
+
+NOT IMPLEMENTED
+
+</td></tr>
+<!-- ============================================================ -->
+<tr><td>
+
+![nextbackdrop](img/nextbackdrop.png)
+    
+</td><td>
+
+```
+stage.next_backdrop()
+```
+
+Bonus! There is also
+
+```
+stage.previous_backdrop()
+stage.random_backdrop()
+```
+
+</td></tr>
+<!-- ============================================================ -->
+<tr><td>
+
+![changesizeby](img/changesizeby.png)
+    
+</td><td>
+
+This makes the sprite 50% bigger.
+
+```
+sprite1.change_size_by(50)
+```
+
+</td></tr>
+<!-- ============================================================ -->
+<tr><td>
+
+![setsizeto](img/setsizeto.png)
+    
+</td><td>
+
+This sets the sprite back to 100% size (original size)
+
+```
+sprite1.set_size_to(100)
+```
+
+</td></tr>
+
+</table>
+
+    
 <a name="sound"></a>
 
 ### Sound
