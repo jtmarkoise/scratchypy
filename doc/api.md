@@ -7,6 +7,17 @@ The complete API generated directly from the code is published on the GitHub
 pages site:
 * [ScratchyPy API Documentation](https://jtmarkoise.github.io/scratchypy-api-master)
 
+Quick table of contents here:
+* [Motion](#motion)
+* [Looks](#looks)
+* [Sound](#sound)
+* [Events](#events)
+* [Control](#control)
+* [Sensing](#sensing)
+* [Operators](#operators)
+* [Variables](#variables)
+* [My Blocks](#myblocks)
+
 <a name="await"></a>
 
 ## What's all this `await` stuff? 
@@ -26,6 +37,7 @@ per second.  ScratchyPy uses an event loop model like this.
 
 Some things in the ScratchyPy vocabulary are long-running animations or things
 we have to wait for.
+
 ![ask and wait](img/ask-and-wait.png)
 
 If we were to just stop the ScratchyPy code while these things 
@@ -48,36 +60,407 @@ you.
 
 ## The Woefully Incomplete List of Scratch Equivalents
 
+<a name="motion"></a>
+
 ### Motion
+<table border="1">
+<tr><th> Scratch </th><th> ScratchyPy </th></tr>
+<!-- ============================================================ -->
+<tr><td>
+
+![movesteps](img/movesteps.png)
+    
+</td><td>
+
+```
+sprite1.move(10)
+```
+
+</td></tr>
+<!-- ============================================================ -->
+<tr><td>
+
+![turn](img/turn.png)
+    
+</td><td>
+
+```
+sprite1.turn(15)    # clockwise
+sprite1.turn(-15)   # counter-clockwise
+```
+
+</td></tr>
+<!-- ============================================================ -->
+<tr><td>
+
+![gotoposition](img/gotoposition.png)
+    
+</td><td>
+
+```
+sprite1.go_to_position(get_window().random_position())
+sprite1.go_to_position(get_window().mouse_pointer())
+```
+
+</td></tr>
+<!-- ============================================================ -->
+<tr><td>
+
+![gotoxy](img/gotoxy.png)
+    
+</td><td>
+
+```
+sprite1.go_to(100, 50)
+```
+
+</td></tr>
+<!-- ============================================================ -->
+<tr><td>
+
+![glidetoposition](img/glidetoposition.png)
+    
+</td><td>
+
+```
+await sprite1.glide_to_position_and_wait(get_window().random_position(), 1)
+await sprite1.glide_to_position_and_wait(get_window().mouse_pointer(), 1)
+```
+
+The above mimics Scratch's behavior.  ScratchyPy also has a similar function
+that starts the glide in the background and continues running code.
+
+```
+sprite1.glide_to_position(get_window().random_position(), 5)  # No await
+```
+
+</td></tr>
+<!-- ============================================================ -->
+<tr><td>
+
+![glideto](img/glideto.png)
+    
+</td><td>
+
+```
+await sprite1.glide_to_and_wait(100, 50, 1)
+```
+
+The above mimics Scratch's behavior.  ScratchyPy also has a similar function
+that starts the glide in the background and continues running code.
+
+```
+sprite1.glide_to(100, 50, 5)  # No await
+```
+
+</td></tr>
+<!-- ============================================================ -->
+<tr><td>
+
+![pointindirection](img/pointindirection.png)
+    
+</td><td>
+Point to the direction in degrees, where 0 is straight up.
+
+```
+sprite1.point_in_direction(0)
+```
+
+</td></tr>
+<!-- ============================================================ -->
+<tr><td>
+
+![pointtowards](img/pointtowards.png)
+    
+</td><td>
+Point towards an (x,y) position or another sprite.
+
+```
+sprite1.point_towards(get_window().mouse_pointer())
+sprite1.point_towards(sprite2)
+```
+
+</td></tr>
+<!-- ============================================================ -->
+<tr><td>
+
+![changexby](img/changexby.png)
+    
+</td><td>
+The change may be positive or negative
+
+```
+sprite1.change_x_by(10)
+sprite1.change_y_by(10)
+```
+
+</td></tr>
+<!-- ============================================================ -->
+<tr><td>
+
+![setxto](img/setxto.png)
+    
+</td><td>
+
+```
+sprite1.set_x_to(79)
+sprite1.set_y_to(-44)
+```
+
+Negative values will go off the screen.
+
+</td></tr>
+<!-- ============================================================ -->
+<tr><td>
+
+![changexby](img/changexby.png)
+    
+</td><td>
+The change may be positive or negative
+
+```
+sprite1.change_x_by(10)
+sprite1.change_y_by(10)
+```
+
+</td></tr>
+<!-- ============================================================ -->
+<tr><td>
+
+![ifonedgebounce](img/ifonedgebounce.png)
+    
+</td><td>
+
+```
+sprite1.if_on_edge_bounce()
+```
+
+</td></tr>
+<!-- ============================================================ -->
+<tr><td>
+
+![setrotationstyle](img/setrotationstyle.png)
+    
+</td><td>
+
+```
+sprite1.set_rotation_style(DONT_ROTATE)
+sprite1.set_rotation_style(LEFT_RIGHT)
+sprite1.set_rotation_style(ALL_AROUND)
+```
+
+</td></tr>
+<!-- ============================================================ -->
+<tr><td>
+
+![xyposition](img/xyposition.png)
+    
+</td><td>
+
+```
+myvar = sprite1.x_position
+myvar = sprite1.y_position
+myvar = sprite1.direction
+```
+
+Note that these are properties and do not require () like function calls.
+
+</td></tr>
+
+</table>
+
+<a name="looks"></a>
 
 ### Looks
 
+<a name="sound"></a>
+
 ### Sound
 
+<a name="events"></a>
+
 ### Events
+
+<a name="control"></a>
 
 ### Control
 Things related to control are mostly part of the Python language itself.
 These blocks are still covered here for completeness and to point out some
 important caveats.
 
-wait 1 seconds | `await wait(1)`
+<table border="1">
+<tr><th> Scratch </th><th> ScratchyPy </th></tr>
+<!-- ============================================================ -->
+<tr><td>
+
+![wait](img/wait.png)
+    
+</td><td>
+
+`await wait(1)`
+   
 Note: do NOT use Python's `time.sleep(1)` as that will block the event loop!
 See [the await section](#await) for more detail.
 
-repeat 10 | `for i in range(10):  doSomething()`
+</td></tr>
+<!-- ============================================================ -->
+<tr><td>
 
-forever | 
+![repeat](img/repeat.png)
+
+</td><td>
+
+```
+for i in range(10):
+    doSomething()
+```
+
+</td></tr>
+<!-- ============================================================ -->
+<tr><td>
+
+![forever](img/forever.png)
+
+</td><td>
+
 ```
 def runEachTick():
     doSomething()
-sprite1.forever(runEachTick()
+sprite1.forever(runEachTick)
 ```
+
 Note: Do NOT use `while True: doSomething()` as that will block the event loop!
 See [the await section](#await) for more detail.
 
+</td></tr>
+<!-- ============================================================ -->
+<tr><td>
+
+![ifthen](img/ifthen.png)
+
+</td><td>
+
+```
+if myvar < 10:
+    doSomething()
+```
+
+</td></tr>
+<!-- ============================================================ -->
+<tr><td>
+
+![ifthenelse](img/ifthenelse.png)
+
+</td><td>
+
+```
+if myvar < 10:
+    doSomething()
+else:
+    doSomethingElse()
+```
+
+</td></tr>
+<!-- ============================================================ -->
+<tr><td>
+
+![waituntil](img/waituntil.png)
+
+</td><td>
+The Python equivalent is inverted to mean "wait while" the opposite condition.
+
+```
+async def doSomething():
+    while myval >= 10:
+        await get_window().next_frame()
+```
+
+This checks if myval >= 10, and while so, waits for the next frame to check
+again.
+Because [we can't sit here waiting](#await), we must use the `await` keyword
+and put this code in an `async` function.
+
+</td></tr>
+<!-- ============================================================ -->
+<tr><td>
+
+![repeatuntil](img/repeatuntil.png)
+
+</td><td>
+The Python equivalent is inverted to mean "repeat while" the opposite condition.
+
+```
+while myval >= 10:
+    doSomething()
+```
+
+Careful if your doSomething() takes a long time or has to wait.  You can also 
+make this use `await` like the previous example if so.
+
+</td></tr>
+<!-- ============================================================ -->
+<tr><td>
+
+![stop](img/stop.png)
+
+</td><td>
+It depends what you want to do here.  If you want to stop just the current 
+function, then you can do this:
+
+```
+def doSomething():
+    for item in myCart:
+        if item == "apple":
+            return item  # stop searching once we find the apple
+```
+
+</td></tr>
+<!-- ============================================================ -->
+<tr><td>
+
+![whenistartasclone](img/whenistartasclone.png)
+
+</td><td>
+TODO
+
+</td></tr>
+<!-- ============================================================ -->
+<tr><td>
+
+![createaclone](img/createaclone.png)
+
+</td><td>
+
+```
+sprite2 = sprite1.clone()
+sprite3 = sprite2.clone("clone's name", stage) # name it special and add to stage too
+```
+
+</td></tr>
+<!-- ============================================================ -->
+<tr><td>
+
+![deletethisclone](img/deletethisclone.png)
+
+</td><td>
+TODO
+
+</td></tr>
+</table>
+
+<a name="sensing"></a>
+
 ### Sensing
+
+<a name="operators"></a>
+
+### Operators
+
+<a name="variables"></a>
 
 ### Variables
 
+<a name="myblocks"></a>
+
 ### My Blocks
+

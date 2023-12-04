@@ -29,7 +29,7 @@ TODO: ScratchyPy is not a pip package yet; how to copy
 ## Quick Start
 
 <table border="1">
-<tr><td> This Scratch code... </td><td>... is equivalent to this ScratchyPy</td></tr>
+<tr><th> This Scratch code... </th><th>... is equivalent to this ScratchyPy</th></tr>
 <tr><td>
 
 ![scratch block](doc/img/quickstart-scratch.png)
