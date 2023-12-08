@@ -2,7 +2,7 @@
 ScratchyPy is a graphics-focused library for Python using [Pygame](https://www.pygame.org).
 It uses the same vocabulary as the popular [Scratch](https://scratch.mit.edu) block-based programming lanugage.
 
-Meet the mascot, Oxie, the friendly axolotl.
+Meet the mascot, Axel, the friendly axolotl.
 <center>
 
 ![logo](examples/assets/axolotl1.png)

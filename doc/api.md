@@ -64,6 +64,7 @@ you.
 
 ### Motion
 <table border="1">
+<colgroup><col style="width:200px;"/></colgroup>
 <tr><th> Scratch </th><th> ScratchyPy </th></tr>
 <!-- ============================================================ -->
 <tr><td>
@@ -72,7 +73,7 @@ you.
     
 </td><td>
 
-```
+```python
 sprite1.move(10)
 ```
 
@@ -84,7 +85,7 @@ sprite1.move(10)
     
 </td><td>
 
-```
+```python
 sprite1.turn(15)    # clockwise
 sprite1.turn(-15)   # counter-clockwise
 ```
@@ -97,7 +98,7 @@ sprite1.turn(-15)   # counter-clockwise
     
 </td><td>
 
-```
+```python
 sprite1.go_to_position(get_window().random_position())
 sprite1.go_to_position(get_window().mouse_pointer())
 ```
@@ -110,7 +111,7 @@ sprite1.go_to_position(get_window().mouse_pointer())
     
 </td><td>
 
-```
+```python
 sprite1.go_to(100, 50)
 ```
 
@@ -122,7 +123,7 @@ sprite1.go_to(100, 50)
     
 </td><td>
 
-```
+```python
 await sprite1.glide_to_position_and_wait(get_window().random_position(), 1)
 await sprite1.glide_to_position_and_wait(get_window().mouse_pointer(), 1)
 ```
@@ -130,7 +131,7 @@ await sprite1.glide_to_position_and_wait(get_window().mouse_pointer(), 1)
 The above mimics Scratch's behavior.  ScratchyPy also has a similar function
 that starts the glide in the background and continues running code.
 
-```
+```python
 sprite1.glide_to_position(get_window().random_position(), 5)  # No await
 ```
 
@@ -142,14 +143,14 @@ sprite1.glide_to_position(get_window().random_position(), 5)  # No await
     
 </td><td>
 
-```
+```python
 await sprite1.glide_to_and_wait(100, 50, 1)
 ```
 
 The above mimics Scratch's behavior.  ScratchyPy also has a similar function
 that starts the glide in the background and continues running code.
 
-```
+```python
 sprite1.glide_to(100, 50, 5)  # No await
 ```
 
@@ -162,7 +163,7 @@ sprite1.glide_to(100, 50, 5)  # No await
 </td><td>
 Point to the direction in degrees, where 0 is straight up.
 
-```
+```python
 sprite1.point_in_direction(0)
 ```
 
@@ -175,7 +176,7 @@ sprite1.point_in_direction(0)
 </td><td>
 Point towards an (x,y) position or another sprite.
 
-```
+```python
 sprite1.point_towards(get_window().mouse_pointer())
 sprite1.point_towards(sprite2)
 ```
@@ -189,7 +190,7 @@ sprite1.point_towards(sprite2)
 </td><td>
 The change may be positive or negative
 
-```
+```python
 sprite1.change_x_by(10)
 sprite1.change_y_by(10)
 ```
@@ -202,7 +203,7 @@ sprite1.change_y_by(10)
     
 </td><td>
 
-```
+```python
 sprite1.set_x_to(79)
 sprite1.set_y_to(-44)
 ```
@@ -218,7 +219,7 @@ Negative values will go off the screen.
 </td><td>
 The change may be positive or negative
 
-```
+```python
 sprite1.change_x_by(10)
 sprite1.change_y_by(10)
 ```
@@ -231,7 +232,7 @@ sprite1.change_y_by(10)
     
 </td><td>
 
-```
+```python
 sprite1.if_on_edge_bounce()
 ```
 
@@ -243,7 +244,7 @@ sprite1.if_on_edge_bounce()
     
 </td><td>
 
-```
+```python
 sprite1.set_rotation_style(DONT_ROTATE)
 sprite1.set_rotation_style(LEFT_RIGHT)
 sprite1.set_rotation_style(ALL_AROUND)
@@ -257,7 +258,7 @@ sprite1.set_rotation_style(ALL_AROUND)
     
 </td><td>
 
-```
+```python
 myvar = sprite1.x_position
 myvar = sprite1.y_position
 myvar = sprite1.direction
@@ -281,7 +282,7 @@ Note that these are properties and do not require () like function calls.
 
 </td><td>
 
-```
+```python
 await sprite1.say_and_wait("Hello!", 2)
 await sprite1.think_and_wait("Hmm...", 2)
 ```
@@ -296,7 +297,7 @@ These will [await](#await) until the time is up.
     
 </td><td>
 
-```
+```python
 await sprite1.say("Hello!")
 await sprite1.think("Hmm...")
 ```
@@ -315,7 +316,7 @@ Multiple costumes can be specified when creating the Sprite.  Then the costumes
 can be switched by telling the number here.  Remember in Python, things start 
 counting with zero!
 
-```
+```python
 sprite1 = Sprite(["costume0.png", "costume1.png", "costume2.png"])
 sprite1.switch_costume_to(2)  # picks "costume2.png"
 ```
@@ -329,7 +330,7 @@ sprite1.switch_costume_to(2)  # picks "costume2.png"
     
 </td><td>
 
-```
+```python
 sprite1 = Sprite(["costume0.png", "costume1.png", "costume2.png"])
 sprite1.next_costume()
 ```
@@ -344,7 +345,7 @@ sprite1.next_costume()
 
 The backdrop is for the background of the Stage so it is on the Stage object.
 
-```
+```python
 stage.add_backdrop("background0.png")
 stage.add_backdrop("background1.png", "desert")
 stage.switch_backdrop_to(0)         # by index
@@ -369,13 +370,13 @@ NOT IMPLEMENTED
     
 </td><td>
 
-```
+```python
 stage.next_backdrop()
 ```
 
 Bonus! There is also
 
-```
+```python
 stage.previous_backdrop()
 stage.random_backdrop()
 ```
@@ -390,7 +391,7 @@ stage.random_backdrop()
 
 This makes the sprite 50% bigger.
 
-```
+```python
 sprite1.change_size_by(50)
 ```
 
@@ -404,23 +405,252 @@ sprite1.change_size_by(50)
 
 This sets the sprite back to 100% size (original size)
 
-```
+```python
 sprite1.set_size_to(100)
+```
+
+</td></tr>
+<!-- ============================================================ -->
+<tr><td>
+
+![effects](img/effects.png)
+    
+</td><td>
+
+NOT IMPLEMENTED
+
+</td></tr>
+
+<!-- ============================================================ -->
+<tr><td>
+
+![show](img/show.png)
+    
+</td><td>
+
+```python
+sprite1.show()
+```
+
+</td></tr>
+<!-- ============================================================ -->
+<tr><td>
+
+![hide](img/hide.png)
+    
+</td><td>
+
+```python
+sprite1.hide()
+```
+
+</td></tr>
+<!-- ============================================================ -->
+<tr><td>
+
+![goforwardlayer](img/goforwardlayer.png)
+    
+</td><td>
+
+NOT IMPLEMENTED YET
+
+</td></tr>
+<!-- ============================================================ -->
+<tr><td>
+
+![gotolayer](img/gotolayer.png)
+    
+</td><td>
+
+NOT IMPLEMENTED YET
+
+</td></tr>
+<!-- ============================================================ -->
+<tr><td>
+
+![costumenumbername](img/costumenumbername.png)
+    
+</td><td>
+
+```python
+myvar = sprite1.costume_number
+myvar = sprite1.costume_name  ## NOT IMPLEMENTED YET
+```
+
+</td></tr>
+<!-- ============================================================ -->
+<tr><td>
+
+![size](img/size.png)
+    
+</td><td>
+
+This is as a percent.  For width and height, see sprite1.rect().
+
+```python
+myvar = sprite1.size
 ```
 
 </td></tr>
 
 </table>
 
-    
+<!-- @@@@@@@@@@@@@@@@@@@@@@@@ SOUND @@@@@@@@@@@@@@@@@@@@@@@@ -->
 <a name="sound"></a>
 
 ### Sound
 
+Sorry, sound is NOT IMPLEMENTED yet!
+
+<!-- @@@@@@@@@@@@@@@@@@@@@@@@ EVENTS @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ -->
 <a name="events"></a>
 
 ### Events
 
+Events are all set as _callbacks_ to functions that you write.  Usually the 
+callbacks are set with functions that start with _when_, and you give it the 
+name of your function _without_ the bananas),  Your function will be called 
+with an argument of the object that had the event on it.
+
+<table border="1">
+<tr><th> Scratch </th><th> ScratchyPy </th></tr>
+<!-- ============================================================ -->
+<tr><td>
+
+![whenflagclicked](img/whenflagclicked.png)
+    
+</td><td>
+
+Unlike the scratch blocks, this can only be done once to start the program.  
+Make a single function to do everything needed to start your program and draw 
+the initial stage.  The function takes an argument which is the stage to add 
+your sprites to.
+
+```python
+def doTheStartupStuff(stage)
+    sprite1 = Sprite("character.png")
+    stage.add(sprite1)
+start(doTheStartupStuff)  # Like the green flag.  Note no bananas ()
+```
+
+</td></tr>
+<!-- ============================================================ -->
+<tr><td>
+
+![whenkeypressed](img/whenkeypressed.png)
+    
+</td><td>
+
+```python
+def moveUpSprite(theSprite):
+    theSprite.change_y_by(-10)
+sprite1.when_key_pressed("up", moveUpSprite)
+
+def changeBackground(theStage):
+    theStage.next_backdrop()
+stage.when_key_pressed("b", changeBackground)
+```
+
+The names of most keys on the keyboard can be passed as the first argument to 
+this function.  Special keys have friendly names, like "up" above.  You can also 
+use pygame key codes such as `pygame.K_ESACPE`.  See 
+[Pygame's list](https://www.pygame.org/docs/ref/key.html) for the complete set 
+of key codes and special strings.
+
+Key events can be added to sprites as well as stages.
+
+</td></tr>
+<!-- ============================================================ -->
+<tr><td>
+
+![whenclicked](img/whenclicked.png)
+![whenstageclicked](img/whenstageclicked.png)
+    
+</td><td>
+
+```python
+def doALittleDance(sprite)
+    sprite.turn(15)
+sprite.when_clicked(doALittleDance)
+
+def changeBackground(theStage):
+    theStage.next_backdrop()
+stage.when_clicked(changeBackground)
+```
+
+A click handler can be set on each sprite as well as each stage.
+
+</td></tr>
+<!-- ============================================================ -->
+<tr><td>
+
+![whenbackdropswitches](img/whenbackdropswitches.png)
+    
+</td><td>
+
+NOT IMPLEMENTED
+
+</td></tr>
+<!-- ============================================================ -->
+<tr><td>
+
+![whenireceive](img/whenireceive.png)
+    
+</td><td>
+
+```python
+def gotAMessage(sprite, arguments):
+    sprite.say("Hello " + arguments["name"])
+sprite.when_i_receive("message1", gotAMessage)
+```
+
+As a bonus, ScratchyPy lets you add additional arguments to your broadcast 
+messages.  See below for how to use them.
+
+</td></tr>
+<!-- ============================================================ -->
+<tr><td>
+
+![broadcast](img/broadcast.png)
+    
+</td><td>
+
+Broadcasts, since they go to all sprites, can currently only be done from the
+stage object.
+
+```python
+stage.broadcast("hello")
+```
+
+Optionally, you can add additional information to the broadcast as a Python 
+dictionary:
+
+```python
+stage.broadcast("hello", {name:"Axel"})
+```
+
+</td></tr>
+<!-- ============================================================ -->
+<tr><td>
+
+![broadcastandwait](img/broadcastandwait.png)
+    
+</td><td>
+
+Unclear how to handle this block.  The when_i_receive function will run in the 
+same tick as the broadcast() call.  If that callback is a regular function,
+then it will run to completion before the broadcast() returns.  If the callback
+is an async function, then it will run in the background and there is not a 
+good way to wait for it to complete.
+
+> [!CAUTION]
+> I may decide to change how this works.
+
+</td></tr>
+
+</table>
+
+<!-- @@@@@@@@@@@@@@@@@@@@@@@@ CONTROL @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ -->
 <a name="control"></a>
 
 ### Control
@@ -437,7 +667,9 @@ important caveats.
     
 </td><td>
 
-`await wait(1)`
+```python
+await wait(1)
+```
    
 Note: do NOT use Python's `time.sleep(1)` as that will block the event loop!
 See [the await section](#await) for more detail.
@@ -450,7 +682,7 @@ See [the await section](#await) for more detail.
 
 </td><td>
 
-```
+```python
 for i in range(10):
     doSomething()
 ```
@@ -463,7 +695,7 @@ for i in range(10):
 
 </td><td>
 
-```
+```python
 def runEachTick():
     doSomething()
 sprite1.forever(runEachTick)
@@ -480,7 +712,7 @@ See [the await section](#await) for more detail.
 
 </td><td>
 
-```
+```python
 if myvar < 10:
     doSomething()
 ```
@@ -493,7 +725,7 @@ if myvar < 10:
 
 </td><td>
 
-```
+```python
 if myvar < 10:
     doSomething()
 else:
@@ -509,7 +741,7 @@ else:
 </td><td>
 The Python equivalent is inverted to mean "wait while" the opposite condition.
 
-```
+```python
 async def doSomething():
     while myval >= 10:
         await get_window().next_frame()
@@ -529,7 +761,7 @@ and put this code in an `async` function.
 </td><td>
 The Python equivalent is inverted to mean "repeat while" the opposite condition.
 
-```
+```python
 while myval >= 10:
     doSomething()
 ```
@@ -547,7 +779,7 @@ make this use `await` like the previous example if so.
 It depends what you want to do here.  If you want to stop just the current 
 function, then you can do this:
 
-```
+```python
 def doSomething():
     for item in myCart:
         if item == "apple":
@@ -571,7 +803,7 @@ TODO
 
 </td><td>
 
-```
+```python
 sprite2 = sprite1.clone()
 sprite3 = sprite2.clone("clone's name", stage) # name it special and add to stage too
 ```
