@@ -1131,9 +1131,129 @@ myvar = username()  # Bananas exception!
 
 </table>
 
+
+<!-- @@@@@@@@@@@@@@@@@@@@@@@ OPERATORS  @@@@@@@@@@@@@@@@@@@@@@@@@ -->
+
 <a name="operators"></a>
 
 ### Operators
+
+Everything in this section is built into Python.
+
+<table border="1">
+
+<!-- ============================================================ -->
+<tr><td>
+
+![arithmeticops](img/arithmeticops.png)
+
+</td><td>
+
+```python
+myvar = 6 + 4
+myvar2 = 6 - 4
+myvar3 = 6 * 4
+myvar4 = 6 / 4
+myvar5 = 6 % 4
+```
+
+</td></tr>
+<!-- ============================================================ -->
+<tr><td>
+
+![pickrandom](img/pickrandom.png)
+
+</td><td>
+
+```python
+import random
+myvar = random.randint(1,10)
+```
+
+</td></tr>
+<!-- ============================================================ -->
+<tr><td>
+
+![comparisonops](img/comparisonops.png)
+
+</td><td>
+
+```python
+if myvar > 50:
+    doSomething()
+if myvar < 50:
+    doSomething()
+if myvar == 50:     # Note double equal sign!
+    doSomething()
+```
+
+</td></tr>
+<!-- ============================================================ -->
+<tr><td>
+
+![booleanops](img/booleanops.png)
+
+</td><td>
+
+```python
+if myvar > 50 and myvar < 100:
+    doSomething()
+if myvar == 50 or myvar2 == 50:
+    doSomething()
+if not myvar == 0:    # or `myvar != 0`
+    doSomething()
+```
+
+</td></tr>
+<!-- ============================================================ -->
+<tr><td>
+
+![stringops](img/stringops.png)
+
+</td><td>
+
+```python
+myvar = "apple" + "banana"
+myvar2 = "apple"[0]   # Remember index 0 is the first letter!
+myvar3 = len("apple")
+if "a" in "apple":
+    doSomething()
+```
+
+</td></tr>
+<!-- ============================================================ -->
+<tr><td>
+
+![round](img/round.png)
+
+</td><td>
+
+```python
+myvar = round(3.14)
+```
+
+</td></tr>
+<!-- ============================================================ -->
+<tr><td>
+
+Lots of other math operations:
+
+![mathops](img/mathops.png)
+
+</td><td>
+
+```python
+import math
+myvar = math.sqrt(3.14)
+myvar = abs(-3)
+myvar = math.floor(3.14)
+myvar = math.ceil(3.14)
+# and many more...
+```
+
+</td></tr>
+
+</table>
 
 <a name="variables"></a>
 
