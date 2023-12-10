@@ -6,6 +6,7 @@ Misc. utility functions.
 import asyncio
 import os
 import threading
+import datetime
 
 
 
@@ -14,6 +15,11 @@ async def wait(seconds):
     
 def username():
     return os.getlogin()
+
+def days_since_2000():
+    now = datetime.datetime.today()
+    y2k = datetime.datetime(2000,1,1)
+    return (now-y2k).total_seconds() / 86400
 
 #
 # THREADING

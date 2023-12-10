@@ -18,6 +18,38 @@ Quick table of contents here:
 * [Variables](#variables)
 * [My Blocks](#myblocks)
 
+## Bananas or not?
+
+By bananas, we mean the parentheses () used in Python to call a function. 
+Functions *DO* things, and in Scratch, the blocks that do things are rounded 
+rectangles.
+
+![rectangleblock](img/bananas-rect.png)
+
+So, if what you want is a rectangle in Scratch, then it is 
+probably a function call in ScratchyPy, and you shouldn't forget the bananas! 
+There may even be *arguments* (called "inputs" in Scratch) to the function 
+call.  See the documentation for the function to see what is needed to be 
+provided.
+
+```
+sprite1.move(10)   # Bananas!  With an argument of how many pixels to move.
+```
+
+Things that are ovals in Scratch are *values* such as variables or
+
+![ovalblock](img/bananas-oval.png)
+
+In ScratchyPy, these are _properties_ of an object and do not need bananas to 
+get the value.
+
+```
+myvar = get_window().timer  # No bananas!
+```
+
+> [!NOTE]
+> For the most part this convention is followed, but there are exceptions!
+
 <a name="await"></a>
 
 ## What's all this `await` stuff? 
@@ -793,7 +825,7 @@ def doSomething():
 ![whenistartasclone](img/whenistartasclone.png)
 
 </td><td>
-TODO
+NOT IMPLEMENTED
 
 </td></tr>
 <!-- ============================================================ -->
@@ -820,9 +852,284 @@ TODO
 </td></tr>
 </table>
 
+<!-- @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ SENSING @@@@@@@@@@@@@@@@@@@@@@@@@@@@ -->
+
 <a name="sensing"></a>
 
 ### Sensing
+
+<table border="1">
+<!-- ============================================================ -->
+<tr><td>
+
+![touchingmousepointer](img/touchingmousepointer.png)
+
+</td><td>
+
+```python
+if sprite1.touching(get_window().mouse_pointer):
+    doSomething()
+```
+
+</td></tr>
+<!-- ============================================================ -->
+<tr><td>
+
+![touchingedge](img/touchingedge.png)
+
+</td><td>
+
+```python
+if sprite1.touching_edge():
+    doSomething()
+```
+
+Note an alternative form is `sprite1.touching(Sprite.EDGE)`.
+
+</td></tr>
+<!-- ============================================================ -->
+<tr><td>
+
+![touchingsprite](img/touchingsprite.png)
+
+</td><td>
+
+```python
+if sprite1.touching(sprite2):
+    doSomething()
+```
+
+</td></tr>
+<!-- ============================================================ -->
+<tr><td>
+
+![touchingcolor](img/touchingcolor.png)
+
+</td><td>
+
+```python
+if sprite1.touching_color(color.PURPLE):
+    doSomething()
+```
+
+`color` is a module within scratchypy with named colors.  It can also be used 
+as `scratchypy.color.PURPLE`.
+
+</td></tr>
+<!-- ============================================================ -->
+<tr><td>
+
+![colortouchingcolor](img/colortouchingcolor.png)
+
+</td><td>
+
+NOT IMPLEMENTED
+
+</td></tr>
+<!-- ============================================================ -->
+<tr><td>
+
+![distancetomouse](img/distancetomouse.png)
+
+</td><td>
+
+```python
+myvar = sprite1.distance_to(get_window().mouse_pointer)
+```
+
+</td></tr>
+<!-- ============================================================ -->
+<tr><td>
+
+![distancetosprite](img/distancetosprite.png)
+
+</td><td>
+
+```python
+myvar = sprite1.distance_to(sprite2)
+```
+
+</td></tr>
+<!-- ============================================================ -->
+<tr><td>
+
+![askandanswer](img/askandanswer.png)
+
+</td><td>
+
+```python
+answer = await sprite1.ask_and_wait("What's your name?")
+```
+
+`answer` is just a variable name and can be anything you want.
+
+</td></tr>
+<!-- ============================================================ -->
+<tr><td>
+
+![ifkeypressed](img/ifkeypressed.png)
+
+</td><td>
+
+```python
+if get_window().key_pressed("space"):
+    doSomething()
+```
+
+You can also use `get_window.key_pressed('any')` for checking any key.
+</p>
+See also `sprite1.when_key_pressed()` for more efficient key handling.
+
+
+</td></tr>
+<!-- ============================================================ -->
+<tr><td>
+
+![ifmousedown](img/ifmousedown.png)
+
+</td><td>
+
+```python
+if get_window().mouse_down():
+    doSomething()
+```
+
+</td></tr>
+<!-- ============================================================ -->
+<tr><td>
+
+![mousexy](img/mousexy.png)
+
+</td><td>
+
+```python
+myvar = get_window().mouse_x
+myvar2 = get_window().mouse_y
+```
+
+</td></tr>
+<!-- ============================================================ -->
+<tr><td>
+
+![setdragmode](img/setdragmode.png)
+
+</td><td>
+
+NOT IMPLEMENTED
+
+</td></tr>
+<!-- ============================================================ -->
+<tr><td>
+
+![loudness](img/loudness.png)
+
+</td><td>
+
+NOT IMPLEMENTED
+
+</td></tr>
+<!-- ============================================================ -->
+<tr><td>
+
+![timer](img/timer.png)
+
+</td><td>
+
+
+```python
+myvar = get_window().timer
+```
+
+Like Scratch, this gives the number of seconds since the program started. 
+There are also many different timing functions in Python's `time` module.
+
+</td></tr>
+<!-- ============================================================ -->
+<tr><td>
+
+![resettimer](img/resettimer.png)
+
+</td><td>
+
+```python
+get_window().reset_timer() 
+```
+
+</td></tr>
+<!-- ============================================================ -->
+<tr><td>
+
+![varofobj](img/varofobj.png)
+
+</td><td>
+
+This is to get a property from a different object.  This is easy in Python if 
+you have the variable for the other object.  For example, to match the X 
+position of two sprites:
+
+```python
+sprite1.set_x_to(sprite2.x_position)
+```
+
+</td></tr>
+<!-- ============================================================ -->
+<tr><td>
+
+![currentyear](img/currentyear.png)
+
+</td><td>
+
+Gets the year or other parts of the date or time.  This is readily available 
+in Python's `datetime` module and I didn't think it was worth re-implementing.
+
+```python
+import datetime
+now = datetime.datetime.now()
+currentYear = now.year
+currentMonth = now.month
+currentDate = now.day
+currentDayOfWeek = now.weekday()  # Bananas! Monday=0 ... Sunday=6
+currentHour = now.hour
+currentMinute = now.minute
+currentSecond = now.second
+```
+
+</td></tr>
+
+<!-- ============================================================ -->
+<tr><td>
+
+![dayssince2000](img/dayssince2000.png)
+
+</td><td>
+
+This can also be done in `datetime` but is implemented in ScratchyPy for 
+convenience in the `util` module.
+
+```python
+myvar = days_since_2000()  # Bananas exception!
+```
+
+This gives fractional days since 1/1/2000.  Note that Scratch online seems to 
+give UTC days but this will give days in your local time.
+
+</td></tr>
+<!-- ============================================================ -->
+<tr><td>
+
+![username](img/username.png)
+
+</td><td>
+
+This will give the username of the account logged into the computer.
+
+```python
+myvar = username()  # Bananas exception!
+```
+
+</td></tr>
+
+</table>
 
 <a name="operators"></a>
 

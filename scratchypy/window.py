@@ -50,6 +50,7 @@ class Window:
         self._rollingFrameSec = _RollingAverage()
         self._lastDraw = time.perf_counter() # high resolution timer
         self._debug = False
+        self._epoch = time.monotonic()
         
     def set_debug(self, val=True):
         self._debug = val
@@ -150,6 +151,17 @@ class Window:
     @property
     def rect(self):
         return pygame.Rect(0,0, *self._windowSize)
+    
+    @property
+    def timer(self):
+        """
+        Like the Scratch 'timer' pseudo-variable, this will return the number
+        of seconds (and fractional seconds) since the program was started.
+        """
+        return time.monotonic() - self._epoch
+    
+    def reset_timer(self):
+        self._epoch = time.monotonic()
 
     def _make_screen(self, windowSize):
         winstyle = pygame.FULLSCREEN if self._fullScreen else 0
