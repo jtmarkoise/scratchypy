@@ -96,8 +96,8 @@ you.
 
 ### Motion
 <table border="1">
-<tr><th>______________________Scratch________________________</th>
-    <th>_____________________ScratchyPy______________________ </th></tr>
+<tr><th>__________Scratch____________</th>
+    <th>_________ScratchyPy__________</th></tr>
 <!-- ============================================================ -->
 <tr><td>
 
@@ -306,7 +306,8 @@ Note that these are properties and do not require () like function calls.
 ### Looks
 
 <table border="1">
-<tr><th> Scratch <img width="300"/></th><th> ScratchyPy </th></tr>
+<tr><th>__________Scratch____________</th>
+    <th>_________ScratchyPy__________</th></tr>
 <!-- ============================================================ -->
 <tr><td>
 
@@ -545,7 +546,8 @@ name of your function _without_ the bananas),  Your function will be called
 with an argument of the object that had the event on it.
 
 <table border="1">
-<tr><th> Scratch <img width="300"/></th><th> ScratchyPy </th></tr>
+<tr><th>__________Scratch____________</th>
+    <th>_________ScratchyPy__________</th></tr>
 <!-- ============================================================ -->
 <tr><td>
 
@@ -691,7 +693,8 @@ These blocks are still covered here for completeness and to point out some
 important caveats.
 
 <table border="1">
-<tr><th> Scratch <img width="300"/></th><th> ScratchyPy </th></tr>
+<tr><th>__________Scratch____________</th>
+    <th>_________ScratchyPy__________</th></tr>
 <!-- ============================================================ -->
 <tr><td>
 
@@ -859,7 +862,8 @@ TODO
 ### Sensing
 
 <table border="1">
-<tr><th> Scratch <img width="300"/></th><th> ScratchyPy </th></tr>
+<tr><th>__________Scratch____________</th>
+    <th>_________ScratchyPy__________</th></tr>
 <!-- ============================================================ -->
 <tr><td>
 
@@ -1142,7 +1146,8 @@ myvar = username()  # Bananas exception!
 Everything in this section is built into Python.
 
 <table border="1">
-<tr><th> Scratch <img width="300"/></th><th> ScratchyPy </th></tr>
+<tr><th>__________Scratch____________</th>
+    <th>_________ScratchyPy__________</th></tr>
 
 <!-- ============================================================ -->
 <tr><td>
@@ -1266,7 +1271,8 @@ myvar = math.ceil(3.14)
 Variables you have seen a lot already above.
 
 <table border="1">
-<tr><th> Scratch <img width="300"/></th><th> ScratchyPy </th></tr>
+<tr><th>__________Scratch____________</th>
+    <th>_________ScratchyPy__________</th></tr>
 <!-- ============================================================ -->
 <tr><td>
 
@@ -1304,7 +1310,8 @@ These you have also seen plenty of already... they are just functions and
 defined similarly in Python.
 
 <table border="1">
-<tr><th> Scratch <img width="300"/></th><th> ScratchyPy </th></tr>
+<tr><th>__________Scratch____________</th>
+    <th>_________ScratchyPy__________</th></tr>
 <!-- ============================================================ -->
 <tr><td>
 
