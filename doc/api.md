@@ -840,7 +840,9 @@ NOT IMPLEMENTED
 
 ```python
 sprite2 = sprite1.clone()
-sprite3 = sprite2.clone("clone's name", stage) # name it special and add to stage too
+
+## This extended form gives the clone a new name and adds it to stage
+sprite3 = sprite2.clone("clone's name", stage)
 ```
 
 </td></tr>
