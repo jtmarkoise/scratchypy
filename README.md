@@ -55,7 +55,7 @@ You can run this fully-annotated example and see many others in the /examples fo
 ## Features
 ScratchyPy does not aim to reproduce Scratch exactly and faithfully.  Python, Pygame, and general UI programming patterns work differently and this library is more of a bridge into that world using familiar concepts.
 
-See the complete Scratch mapping [here]()
+See the complete Scratch mapping [here](doc/api.md).
 
 ### Bonus Features
 There are several areas where ScratchyPy adds on some bonus functionality on top of Scratch capabilities.
