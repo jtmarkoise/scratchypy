@@ -16,7 +16,8 @@ from scratchypy.text import AskDialog
 #FIXME: "The Group does not keep sprites in any order"; we want ordering for layers
 class Stage(pygame.sprite.Group):
     '''
-    classdocs
+    A Stage is the main element that contains all the Sprites and dispatches
+    events to the Sprites.  It also contains a backdrop image.
     '''
 
     def __init__(self):
