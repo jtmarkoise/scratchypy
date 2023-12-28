@@ -12,8 +12,8 @@ Meet the mascot, Axel, the friendly axolotl.
 
 > [!NOTE]
 > ScratchyPy is a work-in-progress and does not have a stable release yet. 
-> This means that some functions may change in a way that could break your code 
-> if you upgrade.
+> The API is mostly in place, but there could be further changes that change 
+> behavior.
 
 ## Who's it for?
 If you feel like you've mastered the graphical programming of Scratch, or started to hit some limitations, then ScratchyPy may be a good next step into the world of system programming.
