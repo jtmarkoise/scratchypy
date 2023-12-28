@@ -3,28 +3,35 @@ ScratchyPy is a graphics-focused library for Python using [Pygame](https://www.p
 It uses the same vocabulary as the popular [Scratch](https://scratch.mit.edu) block-based programming lanugage.
 
 Meet the mascot, Axel, the friendly axolotl.
+
 <center>
 
 ![logo](examples/assets/axolotl1.png)
 
 </center>
 
+> [!NOTE]
+> ScratchyPy is a work-in-progress and does not have a stable release yet. 
+> This means that some functions may change in a way that could break your code 
+> if you upgrade.
+
 ## Who's it for?
 If you feel like you've mastered the graphical programming of Scratch, or started to hit some limitations, then ScratchyPy may be a good next step into the world of system programming.
 
 (LEGAL) *This project is not affiliated with Scratch in any way.  Scratch(TM) is a trademark of the Scratch Team.  Scratch is developed by the Lifelong Kindergarten Group at the MIT Media Lab. See [scratch.mit.edu](http://scratch.mit.edu).*
 
+## How to install
+ScratchyPy requires Python 3.8 or higher.
+
+ScratchyPy is built on top of the `pygame` library.
+You'll need `pip3 install pygame`
+
+TODO: ScratchyPy is not a pip package yet; how to copy
+
 ### What you need to know
 Some basic knowledge of Python is required.  There are many good introductory tutorials on the internet that can teach you the basics.
 
 Knowledge of pygame is not required, but you may end up learning some as you go.  
-
-## How to install
-ScratchyPy requires Python 3.8 or higher.
-
-You'll need `pip3 install pygame`
-
-TODO: ScratchyPy is not a pip package yet; how to copy
 
 ## Quick Start
 
