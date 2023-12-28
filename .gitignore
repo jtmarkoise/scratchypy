@@ -131,3 +131,6 @@ dmypy.json
 #eclipse/pydev
 .project
 .pydevproject
+
+#pydoctor docs from makeDoc.sh
+apidocs/
