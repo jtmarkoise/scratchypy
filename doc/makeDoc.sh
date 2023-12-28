@@ -1,7 +1,6 @@
 #!/bin/bash
 
-mkdir -p api
-cd .. && \
+mkdir -p apidocs
 pydoctor \
     --project-name=ScratchyPy \
     --project-url=https://github.com/jtmarkoise/scratchypy/ \
