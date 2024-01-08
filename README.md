@@ -6,7 +6,7 @@ Meet the mascot, Axel, the friendly axolotl.
 
 <center>
 
-![logo](examples/assets/axolotl1.png)
+![logo image](https://raw.githubusercontent.com/jtmarkoise/scratchypy/1d8230349054a9015fa2be823813872e7f90284f/examples/assets/axolotl1.png)
 
 </center>
 
@@ -39,7 +39,7 @@ Knowledge of pygame is not required, but you may end up learning some as you go.
 <tr><th> This Scratch code... </th><th>... is equivalent to this ScratchyPy</th></tr>
 <tr><td>
 
-![scratch block](doc/img/quickstart-scratch.png)
+![scratch block image](https://raw.githubusercontent.com/jtmarkoise/scratchypy/1d8230349054a9015fa2be823813872e7f90284f/doc/img/quickstart-scratch.png)
 
 </td><td>
 
@@ -62,7 +62,7 @@ You can run this fully-annotated example and see many others in the /examples fo
 ## Features
 ScratchyPy does not aim to reproduce Scratch exactly and faithfully.  Python, Pygame, and general UI programming patterns work differently and this library is more of a bridge into that world using familiar concepts.
 
-See the [almost-complete Scratch mapping](doc/api.md).
+See the [almost-complete Scratch mapping](https://github.com/jtmarkoise/scratchypy/blob/1d8230349054a9015fa2be823813872e7f90284f/doc/api.md).
 
 The generated code documentation is continuously published at [https://jtmarkoise.github.io/scratchypy/](https://jtmarkoise.github.io/scratchypy/)
 

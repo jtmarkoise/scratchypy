@@ -1,0 +1,25 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "scratchypy_jtmarkoise"
+version = "0.1.1"
+authors = [
+  { name="Mark Malek" },
+]
+description = "A Scratch-like library for Python using Pygame"
+readme = "README.md"
+requires-python = ">=3.8"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+[project.urls]
+Homepage = "https://github.com/jtmarkoise/scratchypy"
+Issues = "https://github.com/jtmarkoise/scratchypy/issues"
+
+[tool.hatch.build.targets.wheel]
+packages = ["scratchypy"]
