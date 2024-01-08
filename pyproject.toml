@@ -3,7 +3,7 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "scratchypy_jtmarkoise"
+name = "scratchypy"
 version = "0.1.1"
 authors = [
   { name="Mark Malek" },
