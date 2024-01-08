@@ -23,10 +23,9 @@ If you feel like you've mastered the graphical programming of Scratch, or starte
 ## How to install
 ScratchyPy requires Python 3.8 or higher.
 
-ScratchyPy is built on top of the `pygame` library.
-You'll need `pip3 install pygame`
+Install with `pip3 install scratchypy`
 
-TODO: ScratchyPy is not a pip package yet; how to copy
+ScratchyPy is built on top of the `pygame` library, which will be installed as a dependency.
 
 ### What you need to know
 Some basic knowledge of Python is required.  There are many good introductory tutorials on the internet that can teach you the basics.
