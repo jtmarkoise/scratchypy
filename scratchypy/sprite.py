@@ -1,4 +1,4 @@
-# Copyright 2023 Mark Malek
+# Copyright 2024 Mark Malek
 # See LICENSE file for full license terms. 
 """
 Contains the Sprite class, the base of all sprites on a stage, as well as 
@@ -11,6 +11,7 @@ import math
 import asyncio
 import inspect
 import copy
+import sys
 from typing import Literal, Tuple, Union
 from scratchypy.window import get_window
 from scratchypy import color
@@ -36,8 +37,8 @@ class Sprite(pygame.sprite.Sprite):
         Where that is may change based on the costume.
         """
         #TODO: separate from pygame groups
-        self.groups = [ stage ] if stage else []
-        pygame.sprite.Sprite.__init__(self, self.groups)
+        self._stage = stage
+        pygame.sprite.Sprite.__init__(self)
         
         global _idCounter
         _idCounter += 1
@@ -83,7 +84,14 @@ class Sprite(pygame.sprite.Sprite):
         if stage is not None:
             stage.add(self)
             
+        self._backgroundTasks = set()
+            
         # Important: if you add any new members, you must take a look at clone()
+        
+    def destroy(self):
+        for t in self._backgroundTasks:
+            t.cancel()
+        self._backgroundTasks.clear()
         
     def _loadCostumes(self, listOfImages):
         for im in listOfImages:
@@ -136,6 +144,15 @@ class Sprite(pygame.sprite.Sprite):
     @property
     def rect(self):
         return self._rect
+    
+    def run(self, coroutine):
+        """
+        Run the async function in the background until completion or until
+        this sprite is destroyed.
+        """
+        task = asyncio.create_task(coroutine)
+        self._backgroundTasks.add(task)
+        task.add_done_callback(self._backgroundTasks.discard)
     
     #################################################
     ##                  MOTION
@@ -463,6 +480,30 @@ class Sprite(pygame.sprite.Sprite):
         """
         return self._scale * 100
     
+    def go_to_front_layer(self):
+        """
+        Move this sprite on top of all other sprites.
+        """
+        self._stage._sprite_move_layers(self, sys.maxsize)
+        
+    def go_to_back_layer(self):
+        """
+        Move this sprite behind of all other sprites.
+        """
+        self._stage._sprite_move_layers(self, -sys.maxsize)
+        
+    def go_forward_layers(self, howmany:int):
+        """
+        Move this sprite forward the number of layers you specify.
+        """
+        self._stage._sprite_move_layers(self, howmany)
+        
+    def go_backward_layers(self, howmany:int):
+        """
+        Move this sprite backward the number of layers you specify.
+        """
+        self._stage._sprite_move_layers(self, -howmany)
+    
     #################################################
     ##                  SOUND - should be a separate module
     #################################################
@@ -565,7 +606,6 @@ class Sprite(pygame.sprite.Sprite):
         _idCounter += 1
         newObj._name = name if name else "sprite" + str(_idCounter)
         newObj._costumes = self._costumes.copy()
-        newObj.groups = self.groups.copy()
         if stage is not None:
             stage.add(newObj)
         # Clone all handlers and handler dictionaries

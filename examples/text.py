@@ -48,6 +48,9 @@ async def init(stage):
     
     multiLine = TextSprite("multiline1 with some wrapping stuff center justified\nline2\nline3", size=30, maxWidth=320, topleft=(0,460), justification='center')
     stage.add(multiLine)
+    
+    longword = TextSprite("ThisIsOneReallyLongWordThatShouldBeTruncatedWithinTheBox", size=30, topleft=(0,550), maxWidth=250)
+    stage.add(longword)
 
 def tick(stage):
     #print("tick")

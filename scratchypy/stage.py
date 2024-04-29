@@ -1,4 +1,4 @@
-# Copyright 2022 Mark Malek
+# Copyright 2024 Mark Malek
 # See LICENSE file for full license terms. 
 """
 Contains the Stage class used as a canvas to draw Sprites upon.
@@ -8,13 +8,13 @@ import inspect
 import random
 from typing import Union
 import pygame
+import asyncio
 from scratchypy.eventcallback import EventCallback
 import scratchypy.window 
 from scratchypy.text import AskDialog
 
-#TODO prefer composition
-#FIXME: "The Group does not keep sprites in any order"; we want ordering for layers
-class Stage(pygame.sprite.Group):
+
+class Stage:
     '''
     A Stage is the main element that contains all the Sprites and dispatches
     events to the Sprites.  It also contains a backdrop image.
@@ -24,7 +24,8 @@ class Stage(pygame.sprite.Group):
         '''
         Constructor
         '''
-        pygame.sprite.Group.__init__(self)
+        # Ordered list of sprites, from bottom to top
+        self._sprites = []
         self._on_start = EventCallback(self, None, name="Stage.when_started")
         self._on_tick = EventCallback(self, None, name="Stage.each_tick")
         # list of (name, surface) tuples
@@ -39,6 +40,7 @@ class Stage(pygame.sprite.Group):
         self._draw_raw = EventCallback(self, None, name="Stage.when_drawing")
         # call subclass init
         self.on_init()
+        self._backgroundTasks = set()
         
     def on_init(self):
         """
@@ -54,12 +56,27 @@ class Stage(pygame.sprite.Group):
     def _start(self):
         self._on_start()
         
+    def destroy(self):
+        for t in self._backgroundTasks:
+            t.cancel()
+        self._backgroundTasks.clear()
+        
+        for sp in self._sprites:
+            sp._stage = None
+            sp.destroy()
+        self._sprites.clear() # break circular ref
+        
+    def sprites(self):
+        return self._sprites.copy()
+        
     def _update(self, screen):
+        """
+        Draw everything.  TODO: draw only what changed.
+        """
         if self._backdropId >= 0:
             screen.blit(self._backdrops[self._backdropId][1], (0,0))
         self._on_tick()
-        #pygame.sprite.Group.update(self)  XXX
-        for sprite in self.sprites():
+        for sprite in self._sprites:
             sprite.update()
             sprite._render(screen)
         self._draw_raw(screen)
@@ -72,7 +89,7 @@ class Stage(pygame.sprite.Group):
         pass
             
     def _on_mouse_motion(self, event):
-        for sp in self.sprites():
+        for sp in self._sprites:
             if sp._draggable:
                 sp._on_mouse_motion(event)
                 
@@ -83,7 +100,7 @@ class Stage(pygame.sprite.Group):
             return # Don't handle right clicks now
         # Find the sprite(s) that has the position
         handled = False
-        for sp in self.sprites():
+        for sp in self._sprites:
             spPos = (int(event.pos[0] - sp._rect.left), int(event.pos[1] - sp._rect.top))
             #TODO: check for mask hit or is rect enough?
             if sp._rect.collidepoint(event.pos) and sp._mask.get_at(spPos) == 1:
@@ -103,7 +120,7 @@ class Stage(pygame.sprite.Group):
         if handler:
             handler(self)
         # Pass to sprites too
-        for sp in self.sprites():
+        for sp in self._sprites:
             sp._on_key_down(event)
             
     def add_backdrop(self, image:Union[str,pygame.Surface], name:str=None):
@@ -148,7 +165,26 @@ class Stage(pygame.sprite.Group):
         # TODO: handle collisions?
         for sp in sprites:
             self._name_lookup[sp.name] = sp
-        pygame.sprite.Group.add(self, *sprites)
+            self._sprites.append(sp)
+            sp._stage = self
+            
+    def remove(self, sprite):
+        try:
+            sprite._stage = None  #TODO: what if already moved to a new stage?
+            self._sprites.remove(sprite)
+            del self._name_lookup[sprite.name]
+        except (ValueError, KeyError):
+            pass
+        
+    def run(self, coroutine):
+        """
+        Run the async function in the background until completion or until
+        this stage is destroyed.
+        TODO: cancel tasks on stage destroy
+        """
+        task = asyncio.create_task(coroutine)
+        self._backgroundTasks.add(task)
+        task.add_done_callback(self._backgroundTasks.discard)
         
     #################################################
     ##                  LOOKS
@@ -198,6 +234,16 @@ class Stage(pygame.sprite.Group):
     def random_backdrop(self):
         if self._backdrops:
             self._backdropId = random.randint(0, len(self._backdrops))
+            
+    def _sprite_move_layers(self, sprite:"Sprite", howmany:int):
+        """
+        Used by sprite layer methods to reorder the sprite in the stage's 
+        drawing order list.
+        """
+        idx = self._sprites.index(sprite) # raise ValueError if not in list
+        newidx = idx + howmany
+        newidx = min(len(self._sprites)-1, max(newidx, 0)) # clamp
+        self._sprites.insert(newidx, self._sprites.pop(idx))
     
     #################################################
     ##                  EVENTS
@@ -235,7 +281,7 @@ class Stage(pygame.sprite.Group):
         self._allClickEvents = allClicks
         
     def broadcast(self, messageName, argDictionary={}, excludeOriginator=None):
-        for sp in [sp for sp in self.sprites() if sp is not excludeOriginator]:
+        for sp in [sp for sp in self._sprites if sp is not excludeOriginator]:
             sp.message(messageName, argDictionary)
             
             

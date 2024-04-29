@@ -1,4 +1,4 @@
-# Copyright 2022 Mark Malek
+# Copyright 2024 Mark Malek
 # See LICENSE file for full license terms. 
 """
 Misc. utility functions.
@@ -10,7 +10,8 @@ import datetime
 
 
 
-async def wait(seconds):
+async def wait(seconds=0):
+    seconds = max(seconds, 1/30)
     await asyncio.sleep(seconds)
     
 def username():

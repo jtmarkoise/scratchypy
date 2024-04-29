@@ -485,7 +485,10 @@ sprite1.hide()
     
 </td><td>
 
-NOT IMPLEMENTED YET
+```python
+sprite1.go_forward_layers(1)
+sprite1.go_backward_layers(1)
+```
 
 </td></tr>
 <!-- ============================================================ -->
@@ -495,7 +498,10 @@ NOT IMPLEMENTED YET
     
 </td><td>
 
-NOT IMPLEMENTED YET
+```python
+sprite1.go_to_front_layer()
+sprite1.go_to_back_layer()
+```
 
 </td></tr>
 <!-- ============================================================ -->
@@ -729,15 +735,25 @@ for i in range(10):
 ![forever](img/forever.png)
 
 </td><td>
+Common case is to do a calculation or check each time a frame is drawn:
 
 ```python
 def runEachTick():
-    doSomething()
+    if get_window().key_pressed("space"):
+        doSomething()
 sprite1.forever(runEachTick)
 ```
 
 Note: Do NOT use `while True: doSomething()` as that will block the event loop!
-See [the await section](#await) for more detail.
+
+If you want to use a `while True:`, you can only do so under certain conditions:
+1. The loop runs quickly and does a `break` at some point.
+2. The loop calls `await` on an asynchronous function call from within the loop.
+   At minimum, you can call `await wait()` to allow the event loop to go to the
+   next frame.
+
+See [the await section](#await) for more detail.  See examples/waves.py for an
+example.
 
 </td></tr>
 <!-- ============================================================ -->

@@ -44,12 +44,12 @@ Knowledge of pygame is not required, but you may end up learning some as you go.
 
 ```python
 from scratchypy import *
-def startItUp(stage):
+def whenStarted(stage):
     sprite1 = Sprite("assets/axolotl1.png")
     stage.add(sprite1)
     sprite1.turn(45)
     sprite1.move(50)
-start(startItUp)
+start(whenStarted)
 ```
 
 </td></tr>

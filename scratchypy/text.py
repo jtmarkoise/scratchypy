@@ -15,17 +15,17 @@ def render_text(font, text, rect, color=color.BLACK, bgcolor=None, justification
     lines = []
     for inLine in re.split('\n', text):
         words = re.split('\\s', inLine)
-        i = 1
-        while i <= len(words):
-            w,_ = font.size(' '.join(words[:i]))
+        i = 0
+        while i < len(words):
+            w,_ = font.size(' '.join(words[:i+1]))
             if w > maxWidth:
                 # one word too many, unless it's the only word, might truncate
                 if i == 0:
                     lines.append(words[0])
-                    words = words[1:]
+                    words.pop(0)
                 else:
-                    lines.append(' '.join(words[:i-1]))
-                    words = words[i-1:]
+                    lines.append(' '.join(words[:i]))
+                    words = words[i:]
                 i=0
             else:
                 i+=1
@@ -36,7 +36,7 @@ def render_text(font, text, rect, color=color.BLACK, bgcolor=None, justification
     # calculate size of single render surface
     surfaces = [font.render(line, True, color) for line in lines]
     # If only one and we can return it as-is.
-    if len(surfaces) == 1 and not bgcolor:
+    if len(surfaces) == 1 and not bgcolor and surfaces[0].get_width() <= maxWidth:
         return surfaces[0]  #TODO: may not honor maxHeight
     # else blit them all to a single surface
     width = min(maxWidth, max([s.get_width() for s in surfaces]))

@@ -1,4 +1,4 @@
-# Copyright 2022 Mark Malek
+# Copyright 2024 Mark Malek
 # See LICENSE file for full license terms. 
 """
 Contains the top-level Window and global execution environment.
@@ -6,6 +6,8 @@ Contains the top-level Window and global execution environment.
 import random
 import asyncio
 import time
+import sys
+import os
 import pygame #todo try
 import pygame.key
 from pygame.locals import *
@@ -51,6 +53,8 @@ class Window:
         self._lastDraw = time.perf_counter() # high resolution timer
         self._debug = False
         self._epoch = time.monotonic()
+        # title can be set before window
+        pygame.display.set_caption(os.path.basename(sys.argv[0]))
         
     def set_debug(self, val=True):
         self._debug = val
@@ -61,6 +65,9 @@ class Window:
         if self._running:
             raise RuntimeError("Can only be set before running")
         self._windowSize=(width, height)
+        
+    def set_title(self, title):
+        pygame.display.set_caption(title)
         
     def set_fullscreen(self):
         self._fullScreen = True
@@ -73,8 +80,9 @@ class Window:
         return self._stage
     
     def set_stage(self, newStage):
-        #TODO: more to it than this?
         # cleanup old, but some events might still reference
+        if self._stage:
+            self._stage.destroy()
         self._stage = newStage
         self._stage._start()
     
@@ -209,6 +217,8 @@ class Window:
             self._stage._update(screen)
         except StopIteration:
             againHandle.cancel()
+            if self._stage:
+                self._stage.destroy()
             asyncio.get_running_loop().stop()
             return
         except Exception as ex:
@@ -225,14 +235,15 @@ class Window:
         loop.call_soon(self._stage._start)
         loop.call_soon(self._async_tick, screen)
         loop.run_forever()
-        # drain cancellations
-        #print("Cancelling tasks")
-        #for task in asyncio.all_tasks():
-            #task.cancel()
-        try:
-            loop.run_until_complete(asyncio.gather(*asyncio.Task.all_tasks()))
-        except:
-            pass #TODO: other try/except may spew on exit
+        # drain cancellations one at a time
+        for task in asyncio.all_tasks(loop):
+            task.cancel()
+            try:
+                loop.run_until_complete(task)
+            except asyncio.exceptions.CancelledError:
+                pass # expected
+            except Exception as ex:
+                print("Ignored exception while draining task %s: %s" % (task, ex))
         loop.close()
         
     async def next_frame(self):
@@ -259,7 +270,13 @@ def set_stage(newStage):
     """
     get_window().set_stage(newStage)
 
-def start(whenStarted=None, stage=None, windowSize=None, fullScreen=False, backgroundColor=None, asyncioDebug=False):
+def start(whenStarted=None, 
+          stage=None, 
+          windowSize=None, 
+          windowTitle=None, 
+          fullScreen=False, 
+          backgroundColor=None, 
+          asyncioDebug=False):
     """
     Shows the window and starts the event loop.  Never returns.
     There are many options that are all optional.  It is best to
@@ -273,6 +290,7 @@ def start(whenStarted=None, stage=None, windowSize=None, fullScreen=False, backg
            and it will be set as the window's stage.
     @param windowSize A tuple of (width, height) for how big to make the window.
            Default (800, 600).
+    @param windowTitle Sets the name in the window title bar.
     @param fullScreen If true, use the full screen and windowSize is ignored.
     @param backgroundColor A scratchypy.color or pygame.color to use as the 
            window background, default WHITE.
@@ -281,6 +299,8 @@ def start(whenStarted=None, stage=None, windowSize=None, fullScreen=False, backg
     global _window
     if windowSize:
         _window.set_size(*windowSize)
+    if windowTitle:
+        _window.set_title(windowTitle)
     if fullScreen:
         _window.set_fullscreen()
     if backgroundColor:
@@ -292,3 +312,4 @@ def start(whenStarted=None, stage=None, windowSize=None, fullScreen=False, backg
     if asyncioDebug:
         _window.set_debug(True)
     _window.run()  #forever
+    sys.exit(0) # Explicit to close window in Thonny
