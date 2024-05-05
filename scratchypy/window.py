@@ -53,6 +53,7 @@ class Window:
         self._lastDraw = time.perf_counter() # high resolution timer
         self._debug = False
         self._epoch = time.monotonic()
+        self._frameDraw = asyncio.Event()
         # title can be set before window
         pygame.display.set_caption(os.path.basename(sys.argv[0]))
         
@@ -225,6 +226,10 @@ class Window:
             print("Exception from events: '%s'." % str(ex))
             #TODO: stop and show dialog?
         
+        # release anybody waiting for the next frame
+        self._frameDraw.set()
+        self._frameDraw.clear()
+        
     def run(self):
         screen = self._make_screen(self._windowSize)
         util.set_ui_thread()
@@ -248,10 +253,9 @@ class Window:
         
     async def next_frame(self):
         """ 
-        Yields control until the next frame is drawn.  This is done by a 
-        calculated sleep so isn't 100% guaranteed. TODO
+        Yields control until the next frame is drawn.
         """
-        await asyncio.sleep(self.FRAME_SEC)
+        await self._frameDraw.wait()
 
 ## Module functions
 _window = Window()
@@ -269,6 +273,23 @@ def set_stage(newStage):
     Convenience to set the current stage on the window.
     """
     get_window().set_stage(newStage)
+    
+
+async def next_frame():
+    """ 
+    Yields control until the next frame is drawn.
+    """
+    await get_window().next_frame()
+
+async def wait(seconds=0):
+    """
+    Asynchronously wait for the given amount of time, in seconds.
+    At minimum this will wait until the next frame.
+    """
+    if seconds <= Window.FRAME_SEC:
+        await next_frame()
+    else:
+        await asyncio.sleep(seconds)
 
 def start(whenStarted=None, 
           stage=None, 

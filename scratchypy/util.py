@@ -8,11 +8,6 @@ import os
 import threading
 import datetime
 
-
-
-async def wait(seconds=0):
-    seconds = max(seconds, 1/30)
-    await asyncio.sleep(seconds)
     
 def username():
     return os.getlogin()

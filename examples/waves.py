@@ -57,7 +57,7 @@ async def moveAxel(axel):
                 axel.go_forward_layers(1)
             lastSpeed = speed
             speed += ACCEL
-            await wait()
+            await next_frame()
         await wait(.5)
     axel.say("Cowabunga!")
 
