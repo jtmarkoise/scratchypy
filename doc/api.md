@@ -750,7 +750,13 @@ If you want to use a `while True:`, you can only do so under certain conditions:
 1. The loop runs quickly and does a `break` at some point.
 2. The loop calls `await` on an asynchronous function call from within the loop.
    At minimum, you can call `await next_frame()` to allow the event loop to 
-   go to the next frame and redraw the screen.
+   go to the next frame and redraw the screen.  A typical 'forever' loop might
+   look like this instead:
+   
+```
+while await next_frame():
+    sprite.turn(1)
+```
 
 See [the await section](#await) for more detail.  See examples/waves.py for an
 example.

@@ -278,8 +278,14 @@ def set_stage(newStage):
 async def next_frame():
     """ 
     Yields control until the next frame is drawn.
+    @return Always True so that this can be used in a cannonical 'forever' loop:
+    ```
+    while await next_frame():
+        sprite.turn(1)
+    ```
     """
     await get_window().next_frame()
+    return True
 
 async def wait(seconds=0):
     """

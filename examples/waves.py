@@ -31,12 +31,11 @@ async def moveWave(wave):
     loop that blocks the main event loop!
     """
     i = random.randint(0,360)
-    while True:
+    while await next_frame():
         offsety = 2*math.sin(math.radians(i))
         offsetx = math.sin(math.radians(i/10))
         wave.change_y_by(offsety)
         wave.change_x_by(offsetx)
-        await wait(.1)
         i+=10
         
 async def moveAxel(axel):
